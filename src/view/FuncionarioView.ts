@@ -15,7 +15,7 @@ export class FuncionarioView {
         1- Visualizar os funcionários
         2- Buscar um funcionário via ID
         3- Cadastrar um novo funcionário`)
-        let opcao= parseInt(this.prompt("O que deseja fazer ?"))
+        let opcao = parseInt(this.prompt("O que deseja fazer ?"))
         switch (opcao) {
             case 1:
                 console.table(await this.Funcionario.listarFuncionario())
@@ -33,8 +33,8 @@ export class FuncionarioView {
                 let email = this.prompt("Digite o email do funcionário")
                 await this.Funcionario.inserirFuncionario(nome, cpf, data_nascimento, funcao, numero_celular, email)
                 break
-            default :
-            console.log("numero errado")    
+            default:
+                console.log("numero errado")
         }
     }
 }
