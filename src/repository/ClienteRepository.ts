@@ -42,5 +42,10 @@ export class ClienteRepository {
                 VALUES ($1, $2, $3, $4, $5, $6);`
         await this.pool.query(query, [nome, cpf, data_nascimento, plano_id, numero_celular, email])
     }
+    public async atualizarInformacoes(coluna, registro, id ){
+        const query = `update "GymControl".clientes set ${coluna} =$1  where id = $2`
+        const result = await this.pool.query(query,[registro, id])
+        
+    }
 
 }

@@ -11,7 +11,6 @@ export class ClienteService {
   }
 
   async listarClientes(): Promise<Cliente[]> {
-    console.table(this.repo.listarClientes())
     return await this.repo.listarClientes()
   }
   async buscarID(id): Promise<Cliente[]> {
@@ -33,5 +32,8 @@ export class ClienteService {
       throw new Error("Email Invalido zé!!!!!!!!!!")
     }
     await this.repo.inserirCliente(nome, cpf, data_nascimento, plano_id, numero_celular, email)
+  }
+  async atualizarInformacoes(coluna, registro, id){
+    const 
   }
 }

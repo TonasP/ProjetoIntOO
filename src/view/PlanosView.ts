@@ -19,11 +19,11 @@ export class PlanosView{
                 console.table(await this.planos.listarPlanos())
                 break
             case 2:
-                let id = parseInt(this.prompt("Qual o ID do funcionário?"))
+                let id = parseInt(this.prompt("Qual o ID do plano?"))
                 console.table(await this.planos.buscarID(id))
                 break
             default:
-                console.log("numero errado")
+                console.log("Numero inserido não existente no menu!")
         }
     }
 }
