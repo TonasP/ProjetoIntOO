@@ -12,6 +12,7 @@ export class PagamentosService{
     async listarPagamentos(): Promise<Pagamentos[]>{
         return await this.repo.listarPagamentos()
     }  
+    
     async buscarID(id): Promise<Pagamentos[]>{
         let lista : Pagamentos[]= []
         lista = await this.repo.buscarID(id)

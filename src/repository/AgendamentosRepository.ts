@@ -19,6 +19,21 @@ export class AgendamentosRepository {
         }
         return listaAgendamentos
     }
+    public async verificarCpf(cpf): Promise<Agendamentos[]>{
+        const query = `SELECT agendamentos.id, clientes.nome FROM "GymControl".agendamentos
+                       join "GymControl".clientes
+                       on agendamentos.cliente_id = clientes.id
+                       where clientes.cpf = $1`
+        const result = await this.pool.query(query,[cpf])
+        const listaAgendamentos: Agendamentos[] = []
+
+        for (const row of result.rows) {
+            const agendamento = new Agendamentos(row.id, row.id_cliente, row.id_funcionario, row.data_marcada, row.tipo)
+            listaAgendamentos.push(agendamento)
+        }
+        return listaAgendamentos
+
+    }
     public async buscarID(id): Promise<Agendamentos[]> {
         const query = 'SELECT * FROM "GymControl".Agendamentos where id = $1'
         const result = await this.pool.query(query, [id])
@@ -36,5 +51,7 @@ export class AgendamentosRepository {
         VALUES ( $1, $2, $3, $4);`
         await this.pool.query(query, [ id_cliente, id_funcionario, data_marcada, tipo])
     }
-
+    public async atualizarInformações(coluna, registro, cpf){
+        const query = ` `
+    }
 }

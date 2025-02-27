@@ -23,8 +23,14 @@ export class AgendamentosService {
             return lista
         }
     }
-    
+     async verificarCpf(cpf): Promise<boolean> {
+        let lista: Agendamentos[] = []
+        lista = await this.repo.verificarCpf(cpf)
+        return lista.length > 0;
+        //Caso o CPF já exista no banco de dados, o metodo retorna True, caso contrario, retorna False
+      }
     public async inserirAgendamento(id_cliente: Number, id_funcionario: Number, data_marcada: Date ,tipo: string){
         await this.repo.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo)
     }
+    
 }
