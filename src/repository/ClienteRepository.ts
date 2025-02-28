@@ -23,9 +23,9 @@ export class ClienteRepository {
         }
         return listaClientes;
     }
-    public async buscarID(id: number): Promise<Cliente[]> {
-        const query = 'SELECT * FROM "GymControl".clientes where id = $1 ';
-        const result = await this.pool.query(query, [id]);
+    public async buscarPorCpf(cpf: number): Promise<Cliente[]> {
+        const query = 'SELECT * FROM "GymControl".clientes where cpf = $1 ';
+        const result = await this.pool.query(query, [cpf]);
 
         const listaClientes: Cliente[] = [];
 

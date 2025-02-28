@@ -13,9 +13,9 @@ export class ClienteService {
   async listarClientes(): Promise<Cliente[]> {
     return await this.repo.listarClientes()
   }
-  async buscarID(id): Promise<Cliente[]> {
+  async buscarPorCpf(cpf): Promise<Cliente[]> {
     let lista: Cliente[] = []
-    lista = await this.repo.buscarID(id)
+    lista = await this.repo.buscarPorCpf(cpf)
 
     if (lista.length == 0) {
       throw new Error("Cliente não encontrado!");
@@ -51,6 +51,7 @@ export class ClienteService {
 
   async atualizarInformacoes(coluna, registro, cpf) {
     const colunasPermitidas = ['nome', 'email', 'numero_celular', 'plano_id']
+    console.log(`Estas são as informações permitidas: ${colunasPermitidas}`)
     if (!colunasPermitidas.includes(coluna)) {
       console.log("Coluna não permitida!")
       return

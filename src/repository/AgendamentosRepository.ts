@@ -51,7 +51,14 @@ export class AgendamentosRepository {
         VALUES ( $1, $2, $3, $4);`
         await this.pool.query(query, [ id_cliente, id_funcionario, data_marcada, tipo])
     }
-    public async atualizarInformações(coluna, registro, cpf){
-        const query = ` `
+    public async atualizarInformacoes(coluna, registro, cpf){
+        const query = `update "GymControl".agendamentos set ${coluna} =$1  where cpf = $2`
+        const result = await this.pool.query(query, [registro, cpf])
+    }
+    public async deletarAgendamento(cpf){
+        const query = `delete from "GymControl".agendamentos
+                       join "GymControl".clientes
+                       on agendamentos.cliente_id = clientes.id
+                       where clientes.cpf = $1`
     }
 }
