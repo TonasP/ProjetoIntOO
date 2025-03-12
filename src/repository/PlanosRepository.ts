@@ -33,6 +33,15 @@ export class PlanosRepository {
         }
         return listaPlanos;
     }
+    public async atualizarInformacoes(coluna, registro, id) {
+        const query = `update "GymControl".planos set ${coluna} =$1  where id = $2`
+        const result = await this.pool.query(query, [registro, id])
+    }
+    public async deletarPagamento(id) {
+        const query = `delete from "GymControl".pagamentos where id = $1`
+        const result = await this.pool.query(query, [id])
+    }
+
 
 
 }

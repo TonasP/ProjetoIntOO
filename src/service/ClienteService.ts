@@ -45,13 +45,14 @@ export class ClienteService {
       console.log("Plano inexistente!")
       return
     }
-
+    else{
     await this.repo.inserirCliente(nome, cpf, data_nascimento, plano_id, numero_celular, email)
+    console.log("Cliente inserido com sucesso!")
+  }
   }
 
   async atualizarInformacoes(coluna, registro, cpf) {
     const colunasPermitidas = ['nome', 'email', 'numero_celular', 'plano_id']
-    console.log(`Estas são as informações permitidas: ${colunasPermitidas}`)
     if (!colunasPermitidas.includes(coluna)) {
       console.log("Coluna não permitida!")
       return
@@ -65,13 +66,16 @@ export class ClienteService {
       return
     }
     await this.repo.atualizarInformacoes(coluna, registro, cpf)
-    console.log("Atualização realiza com sucesso!")
+    console.log("Atualização realizada com sucesso!")
   }
   public async deletarCliente(cpf) {
     if (!await this.verificarCpf(cpf)) {
       console.log("O CPF inserido não foi encontrado!")
     }
-    await this.repo.deletarCliente(cpf)
+    else{
+      await this.repo.deletarCliente(cpf)
     console.log("Cliente deletado com sucesso!")
   }
+  }
+  
 }

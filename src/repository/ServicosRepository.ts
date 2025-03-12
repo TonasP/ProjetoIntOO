@@ -36,5 +36,13 @@ export class ServicosRepository {
 	VALUES ( $1, $2, $3, $4);`
         await this.pool.query(query, [id_funcionario, id_cliente, tipo_servico, data_servico])
     }
+    public async atualizarInformacoes(coluna, registro, id) {
+        const query = `update "GymControl".servicos set ${coluna} =$1  where id = $2`
+        const result = await this.pool.query(query, [registro, id])
+    }
+    public async deletarPagamento(id){
+        const query = `delete from "GymControl".servicos where id = $1`
+        const result = await this.pool.query(query, [id])
+    }
 
 }

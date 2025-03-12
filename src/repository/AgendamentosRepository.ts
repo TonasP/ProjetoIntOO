@@ -8,13 +8,13 @@ export class AgendamentosRepository {
         this.pool = Database.iniciarConexao()
     }
     async listarAgendamentos(): Promise<Agendamentos[]> {
-        const query = 'SELECT * FROM "GymControl".Agendamentos'
+        const query = 'select agendamentos.id, clientes.nome as cliente, funcionarios.nome as funcionario, agendamentos.data_marcada, agendamentos.tipo from "GymControl".agendamentos join "GymControl".clientes  on agendamentos.cliente_id = clientes.id join  "GymControl".funcionarios on funcionarios.id = agendamentos.id_funcionario'
         const result = await this.pool.query(query)
 
         const listaAgendamentos: Agendamentos[] = []
 
         for (const row of result.rows) {
-            const agendamento = new Agendamentos(row.id, row.id_cliente, row.id_funcionario, row.data_marcada, row.tipo)
+            const agendamento = new Agendamentos(row.id, row.cliente, row.funcionario, row.data_marcada, row.tipo)
             listaAgendamentos.push(agendamento)
         }
         return listaAgendamentos
@@ -34,9 +34,9 @@ export class AgendamentosRepository {
         return listaAgendamentos
 
     }
-    public async buscarID(id): Promise<Agendamentos[]> {
-        const query = 'SELECT * FROM "GymControl".Agendamentos where id = $1'
-        const result = await this.pool.query(query, [id])
+    public async buscarPorCpf(cpf): Promise<Agendamentos[]> {
+        const query = 'SELECT * FROM "GymControl".Agendamentos where cpf = $1'
+        const result = await this.pool.query(query, [cpf])
 
         const listaAgendamentos: Agendamentos[] = []
 
@@ -60,5 +60,6 @@ export class AgendamentosRepository {
                        join "GymControl".clientes
                        on agendamentos.cliente_id = clientes.id
                        where clientes.cpf = $1`
+         await this.pool.query(query,[cpf])                    
     }
 }

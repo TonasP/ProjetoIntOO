@@ -12,9 +12,9 @@ export class AgendamentosService {
         return await this.repo.listarAgendamentos()
     }
 
-    async buscarPorID(id: number): Promise<Agendamentos[]> {
+    async buscarPorCpf(cpf:string): Promise<Agendamentos[]> {
         let lista: Agendamentos[] = []
-        lista = await this.repo.buscarID(id)
+        lista = await this.repo.buscarPorCpf(cpf)
 
         if (lista.length == 0) {
             throw new Error("Agendamento não encontrado!")
@@ -49,6 +49,16 @@ export class AgendamentosService {
         }
         await this.repo.atualizarInformacoes(coluna, registro, cpf)
         console.log("Atualização realiza com sucesso!")
+    }
+    public async deletarAgendamento(cpf){
+        if (!await this.verificarCpf(cpf)){
+            console.log("Cpf inexistente!")
+            return
+        }
+        else{
+            await this.repo.deletarAgendamento(cpf)
+            console.log("Agendamento deletado com sucesso!")
+        }
     }
     
 }

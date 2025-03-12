@@ -19,6 +19,7 @@ export class PagamentosRepository {
         }
         return listaPagamentos
     }
+    
     public async buscarID(id): Promise<Pagamentos[]> {
         const query = 'SELECT * FROM "GymControl".pagamentos where id = $1'
         const result = await this.pool.query(query, [id])
@@ -37,4 +38,13 @@ export class PagamentosRepository {
 	VALUES ( $1, $2, $3);`
         await this.pool.query(query, [id_servico, valor_total, forma_pagamento])
     }
+    public async atualizarInformacoes(coluna, registro, id) {
+        const query = `update "GymControl".pagamentos set ${coluna} =$1  where id = $2`
+        const result = await this.pool.query(query, [registro, id])
+    }
+    public async deletarPagamento(id){
+        const query = `delete from "GymControl".pagamentos where id = $1`
+        const result = await this.pool.query(query, [id])
+    }
+    
 }

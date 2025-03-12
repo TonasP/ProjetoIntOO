@@ -18,7 +18,7 @@ export class ClienteRepository {
         const listaClientes: Cliente[] = [];
 
         for (const row of result.rows) {
-            const cliente = new Cliente(row.id, row.nome, row.cpf, row.data_nascimento, row.plano_id, row.numero_celular, row.email)
+            const cliente = new Cliente(row.id, row.nome, row.email, row.cpf, row.data_nascimento, row.plano_id, row.numero_celular)
             listaClientes.push(cliente);
         }
         return listaClientes;
@@ -30,7 +30,7 @@ export class ClienteRepository {
         const listaClientes: Cliente[] = [];
 
         for (const row of result.rows) {
-            const cliente = new Cliente(row.id, row.nome, row.cpf, row.data_nascimento, row.plano_id, row.numero_celular, row.email);
+            const cliente = new Cliente(row.id, row.nome, row.email, row.cpf, row.data_nascimento, row.plano_id, row.numero_celular);
             listaClientes.push(cliente);
         }
         return listaClientes;
