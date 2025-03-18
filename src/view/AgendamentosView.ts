@@ -30,14 +30,14 @@ export class AgendamentosView{
                 console.table(await this.agendamentos.listarAgendamentos())
                 return this.exibirMenu()
             case 2:
-                let cpf = this.prompt("Qual o ID do serviço?")
+                let cpf = this.prompt("Qual o CPF do cliente que realizou o agendamento? ")
                 console.table(await this.agendamentos.buscarPorCpf(cpf))
                 return this.exibirMenu()
             case 3:
                 let id_funcionario = parseInt(this.prompt("Qual o id do funcionário?"))
                 let id_cliente = parseInt(this.prompt("Qual o id do cliente?"))
                 let tipo = this.prompt("Para serviço é o agendamento ?")
-                let data_marcada = new Date(this.prompt("Para que dia foi agendado? ?"))
+                let data_marcada = new Date( this.prompt("Para que dia foi agendado? ?"))
                 console.table(await this.agendamentos.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo))
                 return this.exibirMenu()
             case 4:

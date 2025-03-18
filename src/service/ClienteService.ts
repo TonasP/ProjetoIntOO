@@ -36,6 +36,7 @@ export class ClienteService {
     const emailValido = regex.test(email)
     if (!emailValido) {
       throw new Error("Email Invalido!")
+      
     }
     if (await this.verificarCpf(cpf)) {
       console.log("O CPF inserido já existe no banco de dados!")

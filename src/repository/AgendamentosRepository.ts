@@ -47,7 +47,7 @@ export class AgendamentosRepository {
         return listaAgendamentos
     }
     public async inserirAgendamento(id_cliente: Number, id_funcionario: Number, data_marcada: Date, tipo: string) {
-        const query = `INSERT INTO "GymControl".Agendamentos( id_cliente, id_cliente, data_marcada, tipo)
+        const query = `INSERT INTO "GymControl".Agendamentos( cliente_id, id_funcionario, data_marcada, tipo)
         VALUES ( $1, $2, $3, $4);`
         await this.pool.query(query, [ id_cliente, id_funcionario, data_marcada, tipo])
     }
@@ -55,11 +55,9 @@ export class AgendamentosRepository {
         const query = `update "GymControl".agendamentos set ${coluna} =$1  where cpf = $2`
         const result = await this.pool.query(query, [registro, cpf])
     }
-    public async deletarAgendamento(cpf){
-        const query = `delete from "GymControl".agendamentos
-                       join "GymControl".clientes
-                       on agendamentos.cliente_id = clientes.id
-                       where clientes.cpf = $1`
-         await this.pool.query(query,[cpf])                    
+    public async deletarAgendamento(cpf: string){
+        const query = `delete from "GymControl".agendamentos where cliente_id in (select id from "GymControl".clientes where cpf = $1 )
+`
+         await this.pool.query(query, [cpf])                    
     }
 }
