@@ -60,7 +60,7 @@ export class ClienteRepository {
     }
     public async deletarCliente(cpf) {
         const query = `delete  from "GymControl".clientes where cpf = $1`
-        const result = await this.pool.query(query, [cpf])
+         await this.pool.query(query, [cpf])
 
     }
 

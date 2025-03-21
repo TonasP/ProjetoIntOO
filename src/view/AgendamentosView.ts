@@ -1,6 +1,5 @@
 import PromptSync, { Prompt } from "prompt-sync";
 import { AgendamentosService } from "../service/AgendamentosService";
-import { copyFile } from "fs";
 
 export class AgendamentosView{
     private agendamentos: AgendamentosService
@@ -38,7 +37,7 @@ export class AgendamentosView{
                 let id_cliente = parseInt(this.prompt("Qual o id do cliente?"))
                 let tipo = this.prompt("Para serviço é o agendamento ?")
                 let data_marcada = new Date( this.prompt("Para que dia foi agendado? ?"))
-                console.table(await this.agendamentos.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo))
+                await this.agendamentos.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo)
                 return this.exibirMenu()
             case 4:
                 let identificacao = this.prompt('Qual o CPF do registro que deseja atualizar? ')
@@ -48,9 +47,33 @@ export class AgendamentosView{
                 await this.agendamentos.atualizarInformacoes(coluna, registro, identificacao)
                 return this.exibirMenu()
             case 5: 
-                let identificar= this.prompt("Insira o CPF do cliente que realizou o agendamento: ")
-                await this.agendamentos.deletarAgendamento(identificar)
-                return this.exibirMenu()
+            let cpfDelete = this.prompt("Insira o CPF do cliente que realizou o agendamento: ");
+            let registros = await this.agendamentos.listarRegistros(cpfDelete);
+
+            if (registros.length === 0) {
+                console.log("Nenhum agendamento encontrado para este CPF.");
+                return this.exibirMenu();
+            }
+
+            if (registros.length === 1) {
+                
+                await this.agendamentos.deletarAgendamentoPorID(registros[0].pegarId(), cpfDelete);
+                console.log("Agendamento deletado com sucesso!");
+            } else {
+               
+                console.log("Múltiplos agendamentos encontrados:");
+                console.table(registros);
+
+                let idDelete = parseInt(this.prompt("Digite o ID do agendamento que deseja deletar: "));
+                
+                if (registros.some(async a => await a.pegarId() === idDelete)) {
+                    await this.agendamentos.deletarAgendamentoPorID(idDelete, cpfDelete);
+                    console.log(`Agendamento ID ${idDelete} deletado com sucesso!`);
+                } else {
+                    console.log("ID inválido! Operação cancelada.");
+                }
+            }
+            return this.exibirMenu();
                 case 6:
                     console.log("Retornando ao menu principal")
                     return 

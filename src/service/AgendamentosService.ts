@@ -12,7 +12,7 @@ export class AgendamentosService {
         return await this.repo.listarAgendamentos()
     }
 
-    async buscarPorCpf(cpf:string): Promise<Agendamentos[]> {
+    async buscarPorCpf(cpf: string): Promise<Agendamentos[]> {
         let lista: Agendamentos[] = []
         lista = await this.repo.buscarPorCpf(cpf)
 
@@ -50,16 +50,48 @@ export class AgendamentosService {
         await this.repo.atualizarInformacoes(coluna, registro, cpf)
         console.log("Atualização realiza com sucesso!")
     }
-    public async deletarAgendamento(cpf){
-        if (!await this.verificarCpf(cpf)){
-            console.log("Cpf inexistente!")
+    public async listarRegistros(cpf): Promise<Agendamentos[]> {
+        return await this.repo.listarRegistros(cpf)
+    }
+    public async deletarAgendamentoPorID(id, cpf) {
+        const agendamentos = await this.listarRegistros(cpf)
+        const idsPermitidos = agendamentos.map(a => a.pegarId())
+        if (!idsPermitidos.includes(id)) {
+            console.log("O ID inserido não é compativel com os exibidos!")
             return
         }
-        else{
-            await this.repo.deletarAgendamento(cpf)
-            console.log("Agendamento deletado com sucesso!")
+        else {
+            await this.repo.deletarAgendamentoPorID(id)
         }
+
     }
-    
+
+    public async deletarAgendamento(cpf: string, id: number): Promise<void> {
+        if (!await this.verificarCpf(cpf)) {
+            console.log("CPF inexistente!");
+            return;
+        }
+
+        let agendamentos = await this.listarRegistros(cpf);
+
+        if (agendamentos.length === 0) {
+            console.log("Nenhum agendamento encontrado para este CPF.");
+            return;
+        }
+
+
+        const agendamento = agendamentos.find(async a => await a.pegarId() === id);
+
+        if (!agendamento) {
+            console.log("ID inválido! Operação cancelada.");
+            return;
+        }
+
+
+        await this.repo.deletarAgendamentoPorID(id);
+        console.log(`Agendamento ID ${id} deletado com sucesso!`);
+    }
+
+
 }
 

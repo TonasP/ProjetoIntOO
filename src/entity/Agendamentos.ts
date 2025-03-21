@@ -12,4 +12,8 @@ export class Agendamentos{
         this.data_marcada = data_marcada;
         this.tipo = tipo;
     }
+
+    public async pegarId(){
+        return this.id
+    }
 }
