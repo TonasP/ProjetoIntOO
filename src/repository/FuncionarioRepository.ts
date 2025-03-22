@@ -55,7 +55,7 @@ export class FuncionarioRepository {
         await this.pool.query(query, [nome, cpf, data_nascimento, funcao, numero_celular, email])
     }
     public async deletarFuncionario(cpf) {
-        const query = `delete  from "GymControl".funcionario where cpf = $1`
+        const query = `delete  from "GymControl".funcionarios where cpf = $1`
         const result = await this.pool.query(query, [cpf])
     }
 }

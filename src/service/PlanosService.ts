@@ -28,13 +28,13 @@ export class PlanosService {
         }
     }
     async atualizarInformacoes(coluna, registro, id) {
-        const colunasPermitidas = ['valor_total', 'forma_pagamento']
+        const colunasPermitidas = ['nome', 'valor']
         if (!colunasPermitidas.includes(coluna)) {
             console.log("Coluna não permitida!")
             return
         }
         if (!await this.verificarId(id)) {
-            console.log("Cpf não encontrado!")
+            console.log("ID não encontrado!")
             return
         }
         if (!registro) {
@@ -49,6 +49,21 @@ export class PlanosService {
             console.log("O ID inserido não foi encontrado!")
         }
         await this.repo.deletarPagamento(id)
-        console.log("Cliente deletado com sucesso!")
+        console.log("Plano deletado com sucesso!")
+    }
+    public async inserirPlano(nome:string,valor:number){
+        if (!nome){
+            console.log("O plano deve ter um nome!")
+            return
+        }
+        if (!valor || valor<= 0){
+            console.log("O valor deve ter um valor maior que zero!")
+            return
+        }
+        else{
+            await this.repo.inserirPlano(nome, valor)
+            console.log("Plano inserido com sucesso!")
+        }
+
     }
 }

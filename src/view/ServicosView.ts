@@ -39,21 +39,83 @@ export class ServicosView {
                 console.table(await this.servicos.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico))
                 return this.exibirMenu()
             case 4: 
-            let identificacao = this.prompt('Qual o CPF do registro que deseja atualizar? ')
-                console.log(`Estas são as informações permitidas: nome | email | numero_celular | plano_id | `)
-                let coluna = this.prompt(`Baseado nas informações permitidas, insira o que deseja atualizar! `)
-                let registro = this.prompt(`Insira para o que deseja atualizar a informação: ${coluna}| `)
-                await this.servicos.atualizarInformacoes(coluna, registro, identificacao)
-                return this.exibirMenu()
+            let cpfUpdate = this.prompt("Insira o CPF do cliente que realizou o serviço: ");
+                let registrosUpdate = await this.servicos.listarRegistros(cpfUpdate);
+
+                if (registrosUpdate.length === 0) {
+                    console.log("Nenhum serviço encontrado para este CPF.");
+                    return this.exibirMenu();
+                }
+
+                let idUpdate: number;
+                if (registrosUpdate.length === 1) {
+                    idUpdate = await registrosUpdate[0].pegarId();
+                } else {
+                    console.log("Múltiplos serviços encontrados:");
+                    console.table(registrosUpdate);
+
+                    idUpdate = parseInt(this.prompt("Digite o ID do agendamento que deseja atualizar: "));
+
+                
+                    const idsPermitidos = await Promise.all(registrosUpdate.map(a => a.pegarId()));
+
+                    if (!idsPermitidos.includes(idUpdate)) {
+                        console.log("ID inválido! Operação cancelada.");
+                        return this.exibirMenu();
+                    }
+                }
+
+                console.log(`\nEstas são as informações permitidas para atualização: id_funcionario | data_marcada | tipo`);
+                let colunaUpdate = this.prompt("Qual informação deseja atualizar? ");
+
+                const colunasPermitidas = ['data_servico', 'tipo_servico'];
+                if (!colunasPermitidas.includes(colunaUpdate)) {
+                    console.log("Opção inválida! Atualização cancelada.");
+                    return this.exibirMenu();
+                }
+
+                let novoValor = this.prompt(`Digite o novo valor para ${colunaUpdate}: `);
+
+                await this.servicos.atualizarAgendamentoPorID(idUpdate, colunaUpdate, novoValor);
+                console.log(`Serviço ID ${idUpdate} atualizado com sucesso!`);
+
+                return this.exibirMenu();
             case 5:
-                let identificar= this.prompt("Insira o CPF do cliente que usufruiu do serviço: ")
-                await this.servicos.deletarServicos(identificar)
-                return this.exibirMenu()   
+                let cpfDelete = this.prompt("Insira o CPF do cliente que realizou o serviço: ");
+                let registros = await this.servicos.listarRegistros(cpfDelete);
+
+                if (registros.length === 0) {
+                    console.log("Nenhum serviço encontrado para este CPF.");
+                    return this.exibirMenu();
+                }
+
+                if (registros.length === 1) {
+                    await this.servicos.deletarAgendamentoPorID(await registros[0].pegarId(), cpfDelete);
+                    console.log("Serviço deletado com sucesso!");
+                    return this.exibirMenu();
+                }
+
+                console.log("Múltiplos serviços encontrados:");
+                console.table(registros);
+
+                let idDelete = parseInt(this.prompt("Digite o ID do agendamento que deseja deletar: "));
+
+                const idsPermitidos = await Promise.all(registros.map(a => a.pegarId()));
+
+                if (idsPermitidos.includes(idDelete)) {
+                    await this.servicos.deletarAgendamentoPorID(idDelete, cpfDelete);
+                    console.log(`Serviço ID ${idDelete} deletado com sucesso!`);
+                } else {
+                    console.log("ID inválido! Operação cancelada.");
+                }
+
+                return this.exibirMenu();   
                 case 6:
                     console.log("Retornando ao menu principal")
                     return 
             default:
                 console.log("Numero inserido não existente no menu!")
+                return this.exibirMenu()
         }
     }
 }

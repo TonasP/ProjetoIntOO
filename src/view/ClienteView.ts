@@ -29,16 +29,16 @@ export class ClienteView {
                 console.table(await this.cliente.listarClientes())
                 return this.exibirMenu()
             case 2:
-                let cpfCliente = this.prompt("Qual o CPF do cliente")
+                let cpfCliente = this.prompt("Qual o CPF do cliente:")
                 console.table(await this.cliente.buscarPorCpf(cpfCliente))
                 return this.exibirMenu()
             case 3:
-                let nome = this.prompt("Digite o nome do cliente")
-                let cpf = this.prompt("Digite o cpf do cliente")
-                let data_nascimento = new Date(this.prompt("Digite a data de nascimento do cliente"))
-                let plano_id = parseInt(this.prompt("Digite o plano do cliente"))
-                let numero_celular = this.prompt("Digite o numero de celular do cliente")
-                let email = this.prompt("Digite o email do cliente")
+                let nome = this.prompt("Digite o nome do cliente: ")
+                let cpf = this.prompt("Digite o cpf do cliente: ")
+                let data_nascimento = new Date(this.prompt("Digite a data de nascimento do cliente: "))
+                let plano_id = parseInt(this.prompt("Digite o plano do cliente: "))
+                let numero_celular = this.prompt("Digite o numero de celular do cliente: ")
+                let email = this.prompt("Digite o email do cliente: ")
                 await this.cliente.inserirCliente(nome, cpf, data_nascimento, plano_id, numero_celular, email)
                 return this.exibirMenu()
             case 4:

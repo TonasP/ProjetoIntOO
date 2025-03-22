@@ -32,6 +32,16 @@ export class AgendamentosService {
     public async inserirAgendamento(id_cliente: Number, id_funcionario: Number, data_marcada: Date, tipo: string) {
         await this.repo.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo)
     }
+    public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
+        const colunasPermitidas = ['id_funcionario', 'data_marcada', 'tipo'];
+        
+        if (!colunasPermitidas.includes(coluna)) {
+            console.log("Coluna inválida! Atualização cancelada.");
+            return;
+        }
+    
+        await this.repo.atualizarAgendamentoPorID(id, coluna, novoValor);
+    }
     public async atualizarInformacoes(coluna, registro, cpf) {
         const colunasPermitidas = ['id_funcionario', 'data_marcada', 'tipo']
         console.log(`Estas são as informações permitidas: ${colunasPermitidas}`)
@@ -53,16 +63,24 @@ export class AgendamentosService {
     public async listarRegistros(cpf): Promise<Agendamentos[]> {
         return await this.repo.listarRegistros(cpf)
     }
-    public async deletarAgendamentoPorID(id, cpf) {
-        const agendamentos = await this.listarRegistros(cpf)
-        const idsPermitidos = agendamentos.map(a => a.pegarId())
+    public async deletarAgendamentoPorID(id: number, cpf: string) {
+        const agendamentos = await this.listarRegistros(cpf);
+
+
+        if (agendamentos.length === 0) {
+            console.log("Nenhum agendamento encontrado para este CPF.");
+            return;
+        }
+
+
+        const idsPermitidos = await Promise.all(agendamentos.map(async a => await a.pegarId()));
+
+
         if (!idsPermitidos.includes(id)) {
-            console.log("O ID inserido não é compativel com os exibidos!")
-            return
+            console.log("O ID inserido não é compatível com os exibidos!");
+            return;
         }
-        else {
-            await this.repo.deletarAgendamentoPorID(id)
-        }
+        await this.repo.deletarAgendamentoPorID(id);
 
     }
 
@@ -86,10 +104,10 @@ export class AgendamentosService {
             console.log("ID inválido! Operação cancelada.");
             return;
         }
-
-
-        await this.repo.deletarAgendamentoPorID(id);
-        console.log(`Agendamento ID ${id} deletado com sucesso!`);
+        else {
+            await this.repo.deletarAgendamentoPorID(id);
+            console.log(`Agendamento ID ${id} deletado com sucesso!`)
+        }
     }
 
 

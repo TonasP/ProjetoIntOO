@@ -44,6 +44,7 @@ export class FuncionarioService {
             return
         }
         await this.repo.inserirFuncionario(nome, cpf, data_nascimento, funcao, numero_celular, email)
+        console.log("Funcionário inserido com sucesso!")
     }
     async atualizarInformacoes(coluna, registro, cpf) {
         const colunasPermitidas = ['nome', 'email', 'numero_celular', 'funcao', 'cpf']
@@ -68,7 +69,7 @@ export class FuncionarioService {
             console.log("O CPF inserido não foi encontrado!")
         }
         await this.repo.deletarFuncionario(cpf)
-        console.log("Cliente deletado com sucesso!")
+        console.log("Funcionário deletado com sucesso!")
     }
 
 

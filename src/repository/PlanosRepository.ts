@@ -38,11 +38,16 @@ export class PlanosRepository {
         const result = await this.pool.query(query, [registro, id])
     }
     public async deletarPagamento(id) {
-        const query = `delete from "GymControl".pagamentos where id = $1`
+        const query = `delete from "GymControl".planos where id = $1`
         const result = await this.pool.query(query, [id])
     }
 
-
+    public async inserirPlano(nome: string, valor: number){
+        const query = `INSERT INTO "GymControl".planos(
+	                   nome, valor)
+	                   VALUES ($1, $2);`
+        await this.pool.query(query,[nome, valor])
+    }
 
 }
 

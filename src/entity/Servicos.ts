@@ -11,4 +11,7 @@ export class Servicos{
         this.tipo_servico = tipo_servico;
         this.data_servico = data_servico;
     }
+    public async pegarId(){
+        return this.id
+    }
 }

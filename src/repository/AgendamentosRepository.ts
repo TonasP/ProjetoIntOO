@@ -64,6 +64,10 @@ export class AgendamentosRepository {
         VALUES ( $1, $2, $3, $4);`
         await this.pool.query(query, [id_cliente, id_funcionario, data_marcada, tipo])
     }
+    public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
+        const query = `UPDATE "GymControl".agendamentos SET ${coluna} = $1 WHERE id = $2`;
+        await this.pool.query(query, [novoValor, id]);
+    }
     public async atualizarInformacoes(coluna, registro, cpf) {
         const query = `update "GymControl".agendamentos set ${coluna} =$1  where cpf = $2`
         const result = await this.pool.query(query, [registro, cpf])
