@@ -10,4 +10,7 @@ export class Pagamentos {
         this.valor_total = valor_total;
         this.forma_pagamento = forma_pagamento;
     }
+    public async pegarId(){
+        return this.id
+    }
 }

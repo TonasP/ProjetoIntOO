@@ -1,26 +1,27 @@
 import { promises } from "dns";
 import { Servicos } from "../entity/Servicos";
 import { ServicosRepository } from "../repository/ServicosRepository";
+import { ServicosDTO } from "../entity/ServicosDTO";
 export class ServicosService{
     private repo: ServicosRepository
     constructor(){
         this.repo= new ServicosRepository()
     }
-    async listarServicos():Promise<Servicos[]>{
+    async listarServicos():Promise<ServicosDTO[]>{
        return await this.repo.listarServicos()
     } 
     async verificarId(id){
-        let lista: Servicos[] = []
-                lista = await this.repo.buscarID(id)
+        let lista = await this.repo.buscarID(id)
+                
                 return lista.length > 0;
                 //Caso o ID exista no banco de dados, o metodo retorna True, caso contrario, retorna False
     }
-    async buscarID(id): Promise<Servicos[]>{
-        let lista: Servicos[]= []
-        lista = await this.repo.buscarID(id)
+    async buscarID(id): Promise<ServicosDTO[]>{
+        let lista = await this.repo.buscarID(id)
 
         if (lista.length==0){
-            throw new Error("Serviço não encontrado!")
+            console.log("Serviço não encontrado!")
+            return []
         }
         else{
             return lista
@@ -40,15 +41,15 @@ export class ServicosService{
     async inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico){
         await this.repo.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico)
     }
-    public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
+    public async atualizarServicoPorID(id: number, coluna: string, novoValor: string) {
         const colunasPermitidas = ['data_servico', 'tipo_servico'];
         
         if (!colunasPermitidas.includes(coluna)) {
-            console.log("Coluna inválida! Atualização cancelada.");
+            console.log("Coluna inválida! Atualização cancelada."); 
             return;
         }
     
-        await this.repo.atualizarAgendamentoPorID(id, coluna, novoValor);
+        await this.repo.atualizarServicoPorID(id, coluna, novoValor);
     }
     async atualizarInformacoes(coluna, registro, id) {
         const colunasPermitidas = ['data_servico', 'tipo_servico']
@@ -67,7 +68,7 @@ export class ServicosService{
         await this.repo.atualizarInformacoes(coluna, registro, id)
         console.log("Atualização realiza com sucesso!")
     }
-    public async deletarAgendamentoPorID(id: number, cpf: string) {
+    public async deletarServicoPorID(id: number, cpf: string) {
         const servicos = await this.listarRegistros(cpf);
 
 
@@ -84,10 +85,10 @@ export class ServicosService{
             console.log("O ID inserido não é compatível com os exibidos!");
             return;
         }
-        await this.repo.deletarAgendamentoPorID(id);
+        await this.repo.deletarServicoPorID(id);
 
     }
-    public async deletarAgendamento(cpf: string, id: number): Promise<void> {
+    public async deletarServico(cpf: string, id: number): Promise<void> {
         if (!await this.verificarCpf(cpf)) {
             console.log("CPF inexistente!");
             return;
@@ -108,7 +109,7 @@ export class ServicosService{
             return;
         }
         else {
-            await this.repo.deletarAgendamentoPorID(id);
+            await this.repo.deletarServicoPorID(id);
             console.log(`Serviço ID ${id} deletado com sucesso!`)
         }
     }

@@ -25,9 +25,10 @@ export class MenuPrincipal {
         this.prompt = PromptSync()
     }
     public async exibirMenu() {
+        
         console.log(`
             \x1b[1m\x1b[34m=============================\x1b[0m
-            \x1b[1m\x1b[32m          MENU PRINCIPAL\x1b[0m
+            \x1b[1m\x1b[32m        MENU PRINCIPAL\x1b[0m
             \x1b[1m\x1b[34m=============================\x1b[0m
             \x1b[33m1- \x1b[0mMenu de Clientes
             \x1b[33m2- \x1b[0mMenu de Funcionários
@@ -63,6 +64,7 @@ export class MenuPrincipal {
                 break
             default:
                 console.log("Opção inválida")
+                return this.exibirMenu()
         }
 
     }

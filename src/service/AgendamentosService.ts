@@ -1,6 +1,7 @@
 
 import { Agendamentos } from "../entity/Agendamentos";
 import { AgendamentosRepository } from "../repository/AgendamentosRepository";
+import { AgendamentosDTO } from "../entity/AgendamentosDTO";
 
 export class AgendamentosService {
     private repo: AgendamentosRepository
@@ -8,16 +9,17 @@ export class AgendamentosService {
     constructor() {
         this.repo = new AgendamentosRepository
     }
-    async listarAgendamentos(): Promise<Agendamentos[]> {
+    async listarAgendamentos(): Promise<AgendamentosDTO[]> {
         return await this.repo.listarAgendamentos()
     }
 
-    async buscarPorCpf(cpf: string): Promise<Agendamentos[]> {
-        let lista: Agendamentos[] = []
-        lista = await this.repo.buscarPorCpf(cpf)
+    async buscarPorCpf(cpf: string): Promise<AgendamentosDTO[]> {
+        let lista = await this.repo.buscarPorCpf(cpf)
+        
 
         if (lista.length == 0) {
-            throw new Error("Agendamento não encontrado!")
+            console.log("Agendamento não encontrado!")
+            return []
         }
         else {
             return lista

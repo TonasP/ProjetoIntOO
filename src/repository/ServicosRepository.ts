@@ -1,13 +1,14 @@
 import { Servicos } from "../entity/Servicos";
 import { Pool } from "pg";
 import { Database } from "./DataBase";
+import { ServicosDTO } from "../entity/ServicosDTO";
 
 export class ServicosRepository {
     private pool: Pool
     constructor() {
         this.pool = Database.iniciarConexao()
     }
-    async listarServicos(): Promise<Servicos[]> {
+    async listarServicos(): Promise<ServicosDTO[]> {
         const query = `SELECT servicos.id, clientes.nome as cliente, funcionarios.nome as funcionario, servicos.tipo_servico, servicos.data_servico from "GymControl".servicos 
                         join "GymControl".clientes 
                         on clientes.id = servicos.id_cliente
@@ -15,13 +16,14 @@ export class ServicosRepository {
                         on funcionarios.id = servicos.id_funcionario`
         const result = await this.pool.query(query)
 
-        const listaServicos: Servicos[] = []
+        return result.rows.map(row => ({
+            id: row.id,
+            cliente : row.cliente,
+            funcionario: row.funcionario,
+            tipo_servico: row.tipo_servico,
+            data_servico: row.data_servico
 
-        for (const row of result.rows) {
-            const servico = new Servicos(row.id, row.funcionario, row.cliente, row.tipo_servico, row.data_servico)
-            listaServicos.push(servico)
-        }
-        return listaServicos
+        }));
     }
     public async listarRegistros(cpf): Promise<Servicos[]> {
             const query = `SELECT servicos.id, clientes.nome as cliente, funcionarios.nome as funcionario, servicos.tipo_servico, servicos.data_servico from "GymControl".servicos 
@@ -41,7 +43,7 @@ export class ServicosRepository {
     
         }
 
-    public async buscarID(id): Promise<Servicos[]> {
+    public async buscarID(id): Promise<ServicosDTO[]> {
         const query = `SELECT servicos.id, clientes.nome as cliente, funcionarios.nome as funcionario, servicos.tipo_servico, servicos.data_servico from "GymControl".servicos 
                         join "GymControl".clientes 
                         on clientes.id = servicos.id_cliente
@@ -49,14 +51,16 @@ export class ServicosRepository {
                         on funcionarios.id = servicos.id_funcionario where servicos.id = $1`
         const result = await this.pool.query(query, [id])
 
-        const listaServicos: Servicos[] = []
+       
+        return result.rows.map(row => ({
+            id: row.id,
+            cliente : row.cliente,
+            funcionario: row.funcionario,
+            tipo_servico: row.tipo_servico,
+            data_servico: row.data_servico
 
-        for (const row of result.rows) {
-            const servico = new Servicos(row.id, row.funcionario, row.cliente, row.tipo_servico, row.data_servico)
-            listaServicos.push(servico)
-        }
-        return listaServicos
-    }s
+        }));
+    }
     public async verificarCpf(cpf): Promise<Servicos[]> {
             const query = `SELECT servicos.id, clientes.nome as cliente, funcionarios.nome as funcionario, servicos.tipo_servico, servicos.data_servico from "GymControl".servicos 
                         join "GymControl".clientes 
@@ -78,7 +82,7 @@ export class ServicosRepository {
 	VALUES ( $1, $2, $3, $4);`
         await this.pool.query(query, [id_funcionario, id_cliente, tipo_servico, data_servico])
     }
-    public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
+    public async atualizarServicoPorID(id: number, coluna: string, novoValor: string) {
         const query = `UPDATE "GymControl".servicos SET ${coluna} = $1 WHERE id = $2`;
         await this.pool.query(query, [novoValor, id]);
     }
@@ -86,12 +90,12 @@ export class ServicosRepository {
         const query = `update "GymControl".servicos set ${coluna} =$1  where id = $2`
         const result = await this.pool.query(query, [registro, id])
     }
-    public async deletarAgendamentoPorID(id: number): Promise<void> {
+    public async deletarServicoPorID(id: number): Promise<void> {
         const query = `DELETE FROM "GymControl".servicos WHERE id = $1`;
         await this.pool.query(query, [id]);
     }
 
-    public async deletarPagamento(id){
+    public async deletarServico(id){
         const query = `delete from "GymControl".servicos where id = $1`
         const result = await this.pool.query(query, [id])
     }

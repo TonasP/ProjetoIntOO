@@ -1,24 +1,28 @@
+
 import { Pool } from "pg";
 import { Database } from "./DataBase";
 import { Agendamentos } from "../entity/Agendamentos";
+import { AgendamentosDTO } from "../entity/AgendamentosDTO";
 
 export class AgendamentosRepository {
     private pool: Pool
     constructor() {
         this.pool = Database.iniciarConexao()
     }
-    async listarAgendamentos(): Promise<Agendamentos[]> {
+    async listarAgendamentos(): Promise<AgendamentosDTO[]> {
         const query = 'select agendamentos.id, clientes.nome as cliente, funcionarios.nome as funcionario, agendamentos.data_marcada, agendamentos.tipo from "GymControl".agendamentos join "GymControl".clientes  on agendamentos.cliente_id = clientes.id join  "GymControl".funcionarios on funcionarios.id = agendamentos.id_funcionario'
         const result = await this.pool.query(query)
 
-        const listaAgendamentos: Agendamentos[] = []
-
-        for (const row of result.rows) {
-            const agendamento = new Agendamentos(row.id, row.cliente, row.funcionario, row.data_marcada, row.tipo)
-            listaAgendamentos.push(agendamento)
+            return result.rows.map(row => ({
+                id: row.id,
+                cliente: row.cliente,
+                funcionario: row.funcionario,
+                data_marcada: row.data_marcada,
+                tipo: row.tipo
+            }));
         }
-        return listaAgendamentos
-    }
+       
+    
     public async listarRegistros(cpf): Promise<Agendamentos[]> {
         const query = `select agendamentos.id, clientes.nome as cliente, funcionarios.nome as funcionario, agendamentos.data_marcada, agendamentos.tipo from "GymControl".agendamentos join "GymControl".clientes  on agendamentos.cliente_id = clientes.id join  "GymControl".funcionarios on funcionarios.id = agendamentos.id_funcionario where clientes.cpf = $1  `
 
@@ -47,17 +51,19 @@ export class AgendamentosRepository {
         return listaAgendamentos
 
     }
-    public async buscarPorCpf(cpf): Promise<Agendamentos[]> {
+    public async buscarPorCpf(cpf): Promise<AgendamentosDTO[]> {
         const query = 'select agendamentos.id, clientes.nome as cliente, funcionarios.nome as funcionario, agendamentos.data_marcada, agendamentos.tipo from "GymControl".agendamentos join "GymControl".clientes  on agendamentos.cliente_id = clientes.id join  "GymControl".funcionarios on funcionarios.id = agendamentos.id_funcionario where clientes.cpf = $1'
         const result = await this.pool.query(query, [cpf])
 
-        const listaAgendamentos: Agendamentos[] = []
-
-        for (const row of result.rows) {
-            const agendamento = new Agendamentos(row.id, row.cliente, row.funcionario, row.data_marcada, row.tipo)
-            listaAgendamentos.push(agendamento)
-        }
-        return listaAgendamentos
+            return result.rows.map(row => ({
+                id: row.id,
+                cliente: row.cliente,
+                funcionario: row.funcionario,
+                data_marcada: row.data_marcada,
+                tipo: row.tipo
+            }));
+        
+       
     }
     public async inserirAgendamento(id_cliente: Number, id_funcionario: Number, data_marcada: Date, tipo: string) {
         const query = `INSERT INTO "GymControl".Agendamentos( cliente_id, id_funcionario, data_marcada, tipo)
