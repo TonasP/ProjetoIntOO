@@ -15,6 +15,9 @@ export class PagamentosService {
     async listarPagamentos(): Promise<PagamentosDTO[]> {
         return await this.repo.listarPagamentos()
     }
+    async listarPagamentosEspecificos(cpf){
+        return await this.repo.listarPagamentosEspecificos(cpf)
+    }
     async verificarId(id): Promise<boolean> {
         let lista = await this.repo.buscarPorCpf(id)
         return lista.length > 0;
@@ -52,7 +55,7 @@ export class PagamentosService {
             return;
         }
     
-        await this.repo.atualizarAgendamentoPorID(id, coluna, novoValor);
+        await this.repo.atualizarPagamentoPorID(id, coluna, novoValor);
     }
     async atualizarInformacoes(coluna, registro, id) {
         const colunasPermitidas = ['valor_total', 'forma_pagamento']
@@ -92,7 +95,7 @@ export class PagamentosService {
 
     }
 
-    public async deletarAgendamento(cpf: string, id: number): Promise<void> {
+    public async deletarPagamento(cpf: string, id: number): Promise<void> {
         if (!await this.verificarCpf(cpf)) {
             console.log("CPF inexistente!");
             return;

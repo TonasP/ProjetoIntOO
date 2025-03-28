@@ -25,6 +25,24 @@ export class ServicosRepository {
 
         }));
     }
+    public async listarServicosEspecificos(cpf){
+        const query = `SELECT servicos.id, clientes.nome as cliente, funcionarios.nome as funcionario, servicos.tipo_servico, servicos.data_servico from "GymControl".servicos 
+                        join "GymControl".clientes 
+                        on clientes.id = servicos.id_cliente
+                        join "GymControl".funcionarios
+                        on funcionarios.id = servicos.id_funcionario
+                        where clientes.cpf = $1`
+        const result = await this.pool.query(query, [cpf])
+
+        return result.rows.map(row => ({
+            id: row.id,
+            cliente : row.cliente,
+            funcionario: row.funcionario,
+            tipo_servico: row.tipo_servico,
+            data_servico: row.data_servico
+
+        }));
+    }
     public async listarRegistros(cpf): Promise<Servicos[]> {
             const query = `SELECT servicos.id, clientes.nome as cliente, funcionarios.nome as funcionario, servicos.tipo_servico, servicos.data_servico from "GymControl".servicos 
                             join "GymControl".clientes 

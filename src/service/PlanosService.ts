@@ -48,7 +48,7 @@ export class PlanosService {
         if (!await this.verificarId(id)) {
             console.log("O ID inserido não foi encontrado!")
         }
-        await this.repo.deletarPagamento(id)
+        await this.repo.deletarPlano(id)
         console.log("Plano deletado com sucesso!")
     }
     public async inserirPlano(nome:string,valor:number){

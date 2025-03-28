@@ -25,6 +25,9 @@ export class AgendamentosService {
             return lista
         }
     }
+    async listarAgendamentosEspecificos(cpf){
+        return this.repo.listarAgendamentosEspecificos(cpf)
+    }
     async verificarCpf(cpf): Promise<boolean> {
         let lista: Agendamentos[] = []
         lista = await this.repo.verificarCpf(cpf)
@@ -33,6 +36,7 @@ export class AgendamentosService {
     }
     public async inserirAgendamento(id_cliente: Number, id_funcionario: Number, data_marcada: Date, tipo: string) {
         await this.repo.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo)
+        console.log("Agendamento inserido com sucesso! ")
     }
     public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
         const colunasPermitidas = ['id_funcionario', 'data_marcada', 'tipo'];

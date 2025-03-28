@@ -35,7 +35,8 @@ export class ClienteService {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const emailValido = regex.test(email)
     if (!emailValido) {
-      throw new Error("Email Invalido!")
+      console.log("Email Invalido!")
+      return
       
     }
     if (await this.verificarCpf(cpf)) {

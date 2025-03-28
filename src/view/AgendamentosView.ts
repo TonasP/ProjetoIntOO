@@ -42,6 +42,7 @@ export class AgendamentosView {
             case 4:
                 let cpfUpdate = this.prompt("Insira o CPF do cliente que realizou o agendamento: ");
                 let registrosUpdate = await this.agendamentos.listarRegistros(cpfUpdate);
+                let registrosVisualizar = await this.agendamentos.listarAgendamentosEspecificos(cpfUpdate)
 
                 if (registrosUpdate.length === 0) {
                     console.log("Nenhum agendamento encontrado para este CPF.");
@@ -53,7 +54,7 @@ export class AgendamentosView {
                     idUpdate = await registrosUpdate[0].pegarId();
                 } else {
                     console.log("Múltiplos agendamentos encontrados:");
-                    console.table(registrosUpdate);
+                    console.table(registrosVisualizar);
 
                     idUpdate = parseInt(this.prompt("Digite o ID do agendamento que deseja atualizar: "));
 
@@ -84,6 +85,7 @@ export class AgendamentosView {
             case 5:
                 let cpfDelete = this.prompt("Insira o CPF do cliente que realizou o agendamento: ");
                 let registros = await this.agendamentos.listarRegistros(cpfDelete);
+                let registrosVs = await this.agendamentos.listarAgendamentosEspecificos(cpfDelete)
 
                 if (registros.length === 0) {
                     console.log("Nenhum agendamento encontrado para este CPF.");
@@ -97,7 +99,7 @@ export class AgendamentosView {
                 }
 
                 console.log("Múltiplos agendamentos encontrados:");
-                console.table(registros);
+                console.table(registrosVs);
 
                 let idDelete = parseInt(this.prompt("Digite o ID do agendamento que deseja deletar: "));
 

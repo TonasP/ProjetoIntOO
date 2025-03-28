@@ -41,6 +41,7 @@ export class ServicosView {
             case 4: 
             let cpfUpdate = this.prompt("Insira o CPF do cliente que realizou o serviço: ");
                 let registrosUpdate = await this.servicos.listarRegistros(cpfUpdate);
+                let registrosView = await this.servicos.listarServicoEspecifico(cpfUpdate)
 
                 if (registrosUpdate.length === 0) {
                     console.log("Nenhum serviço encontrado para este CPF.");
@@ -52,7 +53,7 @@ export class ServicosView {
                     idUpdate = await registrosUpdate[0].pegarId();
                 } else {
                     console.log("Múltiplos serviços encontrados:");
-                    console.table(registrosUpdate);
+                    console.table(registrosView);
 
                     idUpdate = parseInt(this.prompt("Digite o ID do agendamento que deseja atualizar: "));
 
@@ -76,13 +77,14 @@ export class ServicosView {
 
                 let novoValor = this.prompt(`Digite o novo valor para ${colunaUpdate}: `);
 
-                await this.servicos.atualizarAgendamentoPorID(idUpdate, colunaUpdate, novoValor);
+                await this.servicos.atualizarServicoPorID(idUpdate, colunaUpdate, novoValor);
                 console.log(`Serviço ID ${idUpdate} atualizado com sucesso!`);
 
                 return this.exibirMenu();
             case 5:
                 let cpfDelete = this.prompt("Insira o CPF do cliente que realizou o serviço: ");
                 let registros = await this.servicos.listarRegistros(cpfDelete);
+                let registrosVs = await this.servicos.listarServicoEspecifico(cpfDelete)
 
                 if (registros.length === 0) {
                     console.log("Nenhum serviço encontrado para este CPF.");
@@ -90,20 +92,20 @@ export class ServicosView {
                 }
 
                 if (registros.length === 1) {
-                    await this.servicos.deletarAgendamentoPorID(await registros[0].pegarId(), cpfDelete);
+                    await this.servicos.deletarServicoPorID(await registros[0].pegarId(), cpfDelete);
                     console.log("Serviço deletado com sucesso!");
                     return this.exibirMenu();
                 }
 
                 console.log("Múltiplos serviços encontrados:");
-                console.table(registros);
+                console.table(registrosVs);
 
                 let idDelete = parseInt(this.prompt("Digite o ID do agendamento que deseja deletar: "));
 
                 const idsPermitidos = await Promise.all(registros.map(a => a.pegarId()));
 
                 if (idsPermitidos.includes(idDelete)) {
-                    await this.servicos.deletarAgendamentoPorID(idDelete, cpfDelete);
+                    await this.servicos.deletarServicoPorID(idDelete, cpfDelete);
                     console.log(`Serviço ID ${idDelete} deletado com sucesso!`);
                 } else {
                     console.log("ID inválido! Operação cancelada.");

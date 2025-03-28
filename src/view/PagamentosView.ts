@@ -43,6 +43,7 @@ export class PagamentosView {
                 return this.exibirMenu();
                 case 4:
                     let cpfUpdate = this.prompt("Insira o CPF do cliente que realizou o serviço: ");
+                let registrosExibir = await this.pagamentos.listarPagamentosEspecificos(cpfUpdate)    
                 let registrosUpdate = await this.pagamentos.listarRegistros(cpfUpdate);
 
                 if (registrosUpdate.length === 0) {
@@ -55,7 +56,7 @@ export class PagamentosView {
                     idUpdate = await registrosUpdate[0].pegarId();
                 } else {
                     console.log("Múltiplos pagamentos encontrados:");
-                    console.table(registrosUpdate);
+                    console.table(registrosExibir);
 
                     idUpdate = parseInt(this.prompt("Digite o ID do pagamento que deseja atualizar: "));
 
@@ -86,6 +87,7 @@ export class PagamentosView {
                 case 5: 
                 let cpfDelete = this.prompt("Insira o CPF do cliente que realizou o pagamento: ");
                 let registros = await this.pagamentos.listarRegistros(cpfDelete);
+                let listarRegistros = await this.pagamentos.listarPagamentosEspecificos(cpfDelete)
 
                 if (registros.length === 0) {
                     console.log("Nenhum pagamento encontrado para este CPF.");
@@ -99,7 +101,7 @@ export class PagamentosView {
                 }
 
                 console.log("Múltiplos pagamentos encontrados:");
-                console.table(registros);
+                console.table(listarRegistros);
 
                 let idDelete = parseInt(this.prompt("Digite o ID do agendamento que deseja deletar: "));
 

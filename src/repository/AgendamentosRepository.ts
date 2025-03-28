@@ -36,6 +36,19 @@ export class AgendamentosRepository {
         return listaAgendamentos
 
     }
+    public async listarAgendamentosEspecificos(cpf):Promise<AgendamentosDTO[]>{
+        const query = 'select agendamentos.id, clientes.nome as cliente, funcionarios.nome as funcionario, agendamentos.data_marcada, agendamentos.tipo from "GymControl".agendamentos join "GymControl".clientes  on agendamentos.cliente_id = clientes.id join  "GymControl".funcionarios on funcionarios.id = agendamentos.id_funcionario where clientes.cpf = $1'
+        const result = await this.pool.query(query,[cpf])
+
+            return result.rows.map(row => ({
+                id: row.id,
+                cliente: row.cliente,
+                funcionario: row.funcionario,
+                data_marcada: row.data_marcada,
+                tipo: row.tipo
+            }));
+
+    }
     public async verificarCpf(cpf): Promise<Agendamentos[]> {
         const query = `SELECT agendamentos.id, clientes.nome FROM "GymControl".agendamentos
                        join "GymControl".clientes

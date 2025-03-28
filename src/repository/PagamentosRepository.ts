@@ -27,6 +27,26 @@ export class PagamentosRepository {
 
         }));
     }
+    public async listarPagamentosEspecificos(cpf):Promise<PagamentosDTO[]>{
+        const query = `SELECT servicos.id as id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
+                        join "GymControl".servicos
+                        on servicos.id = pagamentos.id_servico
+                        join "GymControl".clientes
+                        on clientes.id = servicos.id_cliente 
+                        where clientes.cpf = $1`
+        const result = await this.pool.query(query,[cpf])
+
+        return result.rows.map(row => ({
+            id: row.id,
+            cliente: row.cliente,
+            id_cliente: row.id_cliente,
+            valor: row.valor,
+            tipo_servico: row.tipo_servico,
+            forma_pagamento: row.forma_pagamento,
+
+        }));
+
+    }
 
     public async buscarPorCpf(cpf): Promise<PagamentosDTO[]> {
         const query = `SELECT servicos.id as id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
@@ -90,8 +110,9 @@ export class PagamentosRepository {
 	 id_servico, valor_total, forma_pagamento)
 	VALUES ( $1, $2, $3);`
         await this.pool.query(query, [id_servico, valor_total, forma_pagamento])
+        console.log("Pagamento inserido com sucesso! ")
     }
-    public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
+    public async atualizarPagamentoPorID(id: number, coluna: string, novoValor: string) {
         const query = `UPDATE "GymControl".pagamentos SET ${coluna} = $1 WHERE id = $2`;
         await this.pool.query(query, [novoValor, id]);
     }
@@ -100,7 +121,7 @@ export class PagamentosRepository {
         const result = await this.pool.query(query, [registro, id])
     }
     public async deletarPagamentoPorID(id: number): Promise<void> {
-        const query = `DELETE FROM "GymControl".servicos WHERE id = $1`;
+        const query = `DELETE FROM "GymControl".pagamentos WHERE id = $1`;
         await this.pool.query(query, [id]);
     }
     public async deletarPagamento(cpf) {

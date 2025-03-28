@@ -29,6 +29,7 @@ export class ServicosService{
         
 
     }
+
     async verificarCpf(cpf): Promise<boolean> {
             let lista: Servicos[] = []
             lista = await this.repo.verificarCpf(cpf)
@@ -38,6 +39,9 @@ export class ServicosService{
     public async listarRegistros(cpf): Promise<Servicos[]> {
             return await this.repo.listarRegistros(cpf)
         }
+    public async listarServicoEspecifico(cpf): Promise<ServicosDTO[]>{
+        return this.repo.listarServicosEspecificos(cpf)
+    }
     async inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico){
         await this.repo.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico)
     }

@@ -37,7 +37,7 @@ export class PlanosRepository {
         const query = `update "GymControl".planos set ${coluna} =$1  where id = $2`
         const result = await this.pool.query(query, [registro, id])
     }
-    public async deletarPagamento(id) {
+    public async deletarPlano(id) {
         const query = `delete from "GymControl".planos where id = $1`
         const result = await this.pool.query(query, [id])
     }
