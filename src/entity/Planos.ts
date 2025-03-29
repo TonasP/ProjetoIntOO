@@ -8,5 +8,10 @@ export class Planos{
         this.nome = nome;
         this.valor = valor;
     }
-    
+    public  pegarID(){
+        return this.id
+    }
+    public  pegarValor(){
+        return this.valor
+    }
 }

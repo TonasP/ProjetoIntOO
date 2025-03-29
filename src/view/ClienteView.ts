@@ -1,14 +1,22 @@
 import { ClienteService } from "../service/ClienteService";
 import PromptSync, { Prompt } from "prompt-sync";
+import { PlanosService } from "../service/PlanosService";
+import { promises } from "dns";
 
 export class ClienteView {
+    private plano : PlanosService
     private cliente: ClienteService
     private prompt: Prompt
 
     constructor() {
+        this.plano = new PlanosService()
         this.cliente = new ClienteService()
         this.prompt = PromptSync()
     }
+    public async listarPlanos(){
+        return await this.plano.listarPlanos()
+    }
+
     public async exibirMenu() {
         console.log(`
             \x1b[1m\x1b[34m------ O que deseja fazer? ------\x1b[0m
@@ -36,6 +44,7 @@ export class ClienteView {
                 let nome = this.prompt("Digite o nome do cliente: ")
                 let cpf = this.prompt("Digite o cpf do cliente: ")
                 let data_nascimento = new Date(this.prompt("Digite a data de nascimento do cliente: "))
+                console.table(await this.listarPlanos())
                 let plano_id = parseInt(this.prompt("Digite o plano do cliente: "))
                 let numero_celular = this.prompt("Digite o numero de celular do cliente: ")
                 let email = this.prompt("Digite o email do cliente: ")
