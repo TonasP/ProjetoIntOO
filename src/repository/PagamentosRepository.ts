@@ -10,7 +10,7 @@ export class PagamentosRepository {
         this.pool = Database.iniciarConexao()
     }
     async listarPagamentos(): Promise<PagamentosDTO[]> {
-        const query = `SELECT servicos.id as id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
+        const query = `SELECT pagamentos.id as id ,servicos.id as servico_id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
                         join "GymControl".servicos
                         on servicos.id = pagamentos.id_servico
                         join "GymControl".clientes
@@ -19,6 +19,7 @@ export class PagamentosRepository {
 
         return result.rows.map(row => ({
             id: row.id,
+            servico_id: row.servico_id,
             cliente: row.cliente,
             id_cliente: row.id_cliente,
             valor: row.valor,
@@ -28,7 +29,7 @@ export class PagamentosRepository {
         }));
     }
     public async listarPagamentosEspecificos(cpf):Promise<PagamentosDTO[]>{
-        const query = `SELECT servicos.id as id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
+        const query = `SELECT pagamentos.id as id ,servicos.id as servico_id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
                         join "GymControl".servicos
                         on servicos.id = pagamentos.id_servico
                         join "GymControl".clientes
@@ -38,6 +39,7 @@ export class PagamentosRepository {
 
         return result.rows.map(row => ({
             id: row.id,
+            servico_id: row.servico_id,
             cliente: row.cliente,
             id_cliente: row.id_cliente,
             valor: row.valor,
@@ -49,7 +51,7 @@ export class PagamentosRepository {
     }
 
     public async buscarPorCpf(cpf): Promise<PagamentosDTO[]> {
-        const query = `SELECT servicos.id as id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
+        const query = `SELECT pagamentos.id as id ,servicos.id as servico_id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, servicos.tipo_servico as tipo_servico, pagamentos.forma_pagamento as forma_pagamento  FROM "GymControl".pagamentos
                         join "GymControl".servicos
                         on servicos.id = pagamentos.id_servico
                         join "GymControl".clientes
@@ -59,6 +61,7 @@ export class PagamentosRepository {
 
         return result.rows.map(row => ({
             id: row.id,
+            servico_id: row.servico_id,
             cliente: row.cliente,
             id_cliente: row.id_cliente,
             valor: row.valor,
@@ -68,7 +71,7 @@ export class PagamentosRepository {
         }));
     }
     public async listarRegistros(cpf): Promise<Pagamentos[]> {
-        const query = `SELECT servicos.id as id, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, pagamentos.forma_pagamento as forma_pagamento FROM "GymControl".pagamentos
+        const query = `SELECT pagamentos.id as id, servicos.id as id_servico, clientes.nome as cliente, clientes.id as id_cliente, pagamentos.valor_total as valor, pagamentos.forma_pagamento as forma_pagamento FROM "GymControl".pagamentos
                     join "GymControl".servicos
                     on servicos.id = pagamentos.id_servico
                     join "GymControl".clientes
@@ -105,12 +108,12 @@ export class PagamentosRepository {
     }
 
 
-    public async inserirPagamento(id_servico: Number, valor_total: Number, forma_pagamento: String) {
+    public async inserirPagamento(id_servico: Number, valor_total: number, forma_pagamento: String) {
         const query = `INSERT INTO "GymControl".pagamentos(
 	 id_servico, valor_total, forma_pagamento)
 	VALUES ( $1, $2, $3);`
         await this.pool.query(query, [id_servico, valor_total, forma_pagamento])
-        console.log("Pagamento inserido com sucesso! ")
+      
     }
     public async atualizarPagamentoPorID(id: number, coluna: string, novoValor: string) {
         const query = `UPDATE "GymControl".pagamentos SET ${coluna} = $1 WHERE id = $2`;

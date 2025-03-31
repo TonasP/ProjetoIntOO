@@ -1,13 +1,20 @@
 import { Cliente } from "../entity/Cliente";
 import { ClienteRepository } from "../repository/ClienteRepository"
+import { ServicosService } from "./ServicosService";
 
 
 export class ClienteService {
+  private cliente : Cliente
+  private servico : ServicosService
 
   private repo: ClienteRepository;
 
   constructor() {
+    this.servico = new ServicosService
     this.repo = new ClienteRepository();
+  }
+  async pegarIdPorCpf(cpf){
+    return this.repo.pegarIdPorCpf(cpf)
   }
 
   async listarClientes(): Promise<Cliente[]> {
@@ -32,12 +39,23 @@ export class ClienteService {
     //Caso o CPF já exista no banco de dados, o metodo retorna True, caso contrario, retorna False
   }
   async inserirCliente(nome: string, cpf: string, data_nascimento: Date, plano_id: number, numero_celular: string, email: string) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const emailValido = regex.test(email)
+    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regexNumero = /(\(?\d{2}\)?\s)?(\d{4,5}\-\d{4})/
+    const regexCpf = /^\d{3}\.\d{3}\.\d{3}\-\d{2}$/
+    const emailValido = regexEmail.test(email)
+    const cpfValido = regexCpf.test(cpf)
+    const numeroValido = regexNumero.test(numero_celular)
     if (!emailValido) {
       console.log("Email Invalido!")
       return
-      
+    }
+    if (!cpfValido){
+      console.log ("CPF não é valido!")
+      return
+    }
+    if (!numeroValido){
+      console.log ("Numero de celular inválido!")
+      return
     }
     if (await this.verificarCpf(cpf)) {
       console.log("O CPF inserido já existe no banco de dados!")
@@ -48,7 +66,15 @@ export class ClienteService {
       return
     }
     else{
+      
     await this.repo.inserirCliente(nome, cpf, data_nascimento, plano_id, numero_celular, email)
+    let id_funcionario = 15
+      let pegarId= await this.pegarIdPorCpf(cpf)
+      let id_cliente = parseInt(pegarId.id)
+      let tipo_servico= "4"
+      let data_servico= new Date()
+      await this.servico.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico)
+    
     console.log("Cliente inserido com sucesso!")
   }
   }
@@ -66,6 +92,15 @@ export class ClienteService {
     if (!registro) {
       console.log("Registros nulos não são permitidos")
       return
+    }
+    if (coluna == 'plano_id'){
+      
+      let id_funcionario = 15
+      let pegarId= await this.pegarIdPorCpf(cpf)
+      let id_cliente = parseInt(pegarId.id)
+      let tipo_servico= "4"
+      let data_servico= new Date()
+      await this.servico.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico)
     }
     await this.repo.atualizarInformacoes(coluna, registro, cpf)
     console.log("Atualização realizada com sucesso!")

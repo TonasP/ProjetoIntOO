@@ -1,11 +1,14 @@
 import { Servicos } from "../entity/Servicos";
 import { ServicosRepository } from "../repository/ServicosRepository";
 import { ServicosDTO } from "../entity/ServicosDTO";
+import { FuncionarioService } from "./FuncionarioService";
 
 export class ServicosService {
+    private funcionario : FuncionarioService
     private repo: ServicosRepository;
 
     constructor() {
+        this.funcionario = new FuncionarioService()
         this.repo = new ServicosRepository();
     }
 
@@ -13,9 +16,19 @@ export class ServicosService {
         return await this.repo.listarServicos();
     }
 
-    async verificarId(id): Promise<boolean> {
+    async verificarId(id): Promise<boolean | void> {
+        if (!id) {
+            return
+        }
         let lista = await this.repo.buscarID(id);
         return lista.length > 0;
+    }
+    public async pegarPlanoCliente(id){
+        if (!id){
+            console.log("ID inválido!")
+            return
+        }
+        return this.repo.pegarPlanoCliente(id)
     }
 
     async buscarID(id): Promise<ServicosDTO[]> {
@@ -27,6 +40,10 @@ export class ServicosService {
             return lista;
         }
     }
+    async listarTipoServico(id) {
+        return this.repo.listarTipoServico(id)
+
+    }
 
     async listarRegistros(cpf): Promise<Servicos[]> {
         return await this.repo.listarRegistros(cpf);
@@ -37,25 +54,36 @@ export class ServicosService {
     }
 
     async inserirServico(id_funcionario: number, id_cliente: number, tipo_servico: string, data_servico: Date) {
-        const servicosFixos = ["Aula de Musculação", "Consulta Nutricional", "Avaliação física"]
-            
-        if (!servicosFixos[tipo_servico]) {
+        let converterServico = parseInt(tipo_servico);
+
+
+        if (isNaN(converterServico) || converterServico < 1 || converterServico > 4) {
             console.log("Erro: Serviço inválido.");
             return;
         }
 
-        const valorServico = servicosFixos[tipo_servico];
-        await this.repo.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico);
-        console.log(`Serviço '${tipo_servico}' inserido com sucesso!`);
-    }
-
-    public async atualizarServicoPorID(id: number, coluna: string, novoValor: string) {
-        const colunasPermitidas = ['data_servico', 'tipo_servico'];
-        if (!colunasPermitidas.includes(coluna)) {
-            console.log("Coluna inválida! Atualização cancelada.");
+        let indiceServico = converterServico - 1;
+        const servicosFixos = ["Aula de Musculação", "Consulta Nutricional", "Avaliação Física", "Assinatura de plano"];
+        let selecionarServico = servicosFixos[indiceServico];
+        let situacaoFuncionario = await this.funcionario.pegarSituacaoEmpregado(id_funcionario)
+        
+        if (situacaoFuncionario === false){
+            console.log("Você não pode ter realizado um serviço com um funcionário inativo no momento!")
+            return
+        }
+        if (!selecionarServico) {
+            console.log("Erro: Serviço selecionado não existe.");
             return;
         }
-        await this.repo.atualizarServicoPorID(id, coluna, novoValor);
+
+        if (!id_cliente || isNaN(id_cliente)) {
+            console.log("Erro: ID do cliente inválido.");
+            return;
+        }
+
+
+        await this.repo.inserirServico(id_funcionario, id_cliente, selecionarServico, data_servico);
+        console.log(`Serviço '${selecionarServico}' inserido com sucesso!`);
     }
 
     async atualizarInformacoes(coluna, registro, id) {

@@ -1,7 +1,7 @@
 import { ClienteService } from "../service/ClienteService";
 import PromptSync, { Prompt } from "prompt-sync";
 import { PlanosService } from "../service/PlanosService";
-import { promises } from "dns";
+
 
 export class ClienteView {
     private plano : PlanosService
@@ -42,11 +42,11 @@ export class ClienteView {
                 return this.exibirMenu()
             case 3:
                 let nome = this.prompt("Digite o nome do cliente: ")
-                let cpf = this.prompt("Digite o cpf do cliente: ")
-                let data_nascimento = new Date(this.prompt("Digite a data de nascimento do cliente: "))
+                let cpf = this.prompt("Digite o cpf do cliente seguindo o seguinte modelo: 000.000.000-00: ")
+                let data_nascimento = new Date(this.prompt("Digite a data de nascimento do cliente seguindo o modelo: DD/MM/AAAA : "))
                 console.table(await this.listarPlanos())
                 let plano_id = parseInt(this.prompt("Digite o plano do cliente: "))
-                let numero_celular = this.prompt("Digite o numero de celular do cliente: ")
+                let numero_celular = this.prompt("Digite o numero de celular do cliente seguindo o modelo: (00) 00000-0000: ")
                 let email = this.prompt("Digite o email do cliente: ")
                 await this.cliente.inserirCliente(nome, cpf, data_nascimento, plano_id, numero_celular, email)
                 return this.exibirMenu()
@@ -54,11 +54,14 @@ export class ClienteView {
                 let identificacao = this.prompt('Qual o CPF do registro que deseja atualizar? ')
                 console.log(`Estas são as informações permitidas: nome | email | numero_celular | plano_id | `)
                 let coluna = this.prompt(`Baseado nas informações permitidas, insira o que deseja atualizar! `)
+                if (coluna == "plano_id"){
+                   console.table (await this.plano.listarPlanos())
+                }
                 let registro = this.prompt(`Insira para o que deseja atualizar a informação: ${coluna}| `)
                 await this.cliente.atualizarInformacoes(coluna, registro, identificacao)
                 return this.exibirMenu()
             case 5:
-                let identificar = this.prompt("Insira o CPF do cliente que deseja deletar!")
+                let identificar = this.prompt("Insira o CPF do cliente que deseja deletar! ")
                 await this.cliente.deletarCliente(identificar)
                 return this.exibirMenu()
             case 6:

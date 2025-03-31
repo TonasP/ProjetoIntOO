@@ -4,18 +4,23 @@ import { PagamentosRepository } from "../repository/PagamentosRepository";
 import { Database } from "../repository/DataBase";
 import { PagamentosDTO } from "../entity/PagamentosDTO";
 import { InadimplentesDTO } from "../entity/InadimplentesDTO";
+import { ServicosService } from "./ServicosService";
+import { PlanosService } from "./PlanosService";
 
 export class PagamentosService {
-    
+    private plano: PlanosService
+    private servico: ServicosService
     private repo: PagamentosRepository
     constructor() {
+        this.plano = new PlanosService()
+        this.servico = new ServicosService()
         this.repo = new PagamentosRepository()
     }
 
     async listarPagamentos(): Promise<PagamentosDTO[]> {
         return await this.repo.listarPagamentos()
     }
-    async listarPagamentosEspecificos(cpf){
+    async listarPagamentosEspecificos(cpf) {
         return await this.repo.listarPagamentosEspecificos(cpf)
     }
     async verificarId(id): Promise<boolean> {
@@ -34,27 +39,66 @@ export class PagamentosService {
         }
     }
     async verificarCpf(cpf): Promise<boolean> {
-                let lista: Pagamentos[] = []
-                lista = await this.repo.verificarCpf(cpf)
-                return lista.length > 0;
-                //Caso o CPF já exista no banco de dados, o metodo retorna True, caso contrario, retorna False
-            }
-        public async listarRegistros(cpf): Promise<Pagamentos[]> {
-                    return await this.repo.listarRegistros(cpf)
-                }    
-
-  
-    async inserirPagamento(id_servico: Number, valor_total: Number, forma_pagamento: String) {
-        await this.repo.inserirPagamento(id_servico, valor_total, forma_pagamento)
+        let lista: Pagamentos[] = []
+        lista = await this.repo.verificarCpf(cpf)
+        return lista.length > 0;
+        //Caso o CPF já exista no banco de dados, o metodo retorna True, caso contrario, retorna False
     }
-    public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
-        const colunasPermitidas = ['forma_pagamento', 'valor_total'];
-        
-        if (!colunasPermitidas.includes(coluna)) {
-            console.log("Coluna inválida! Atualização cancelada."); 
+    public async listarRegistros(cpf): Promise<Pagamentos[]> {
+        return await this.repo.listarRegistros(cpf)
+    }
+
+
+    async inserirPagamento(id_servico: Number, forma_pagamento: string) {
+        const formasPagamento = ["Pix", "Debito", "Credito", "Dinheiro"]
+        let planoCliente= await this.servico.pegarPlanoCliente(id_servico)
+        let pegarValorPlano = await this.plano.pegarValor(planoCliente.plano_id);
+
+        if (!pegarValorPlano) {
+            console.log("Erro: Não foi possível recuperar o valor do plano.");
             return;
         }
-    
+
+        let valorPlano = pegarValorPlano;
+        
+        let converter = parseInt(forma_pagamento)
+        let indiceFormaPagamento = converter - 1
+        if (indiceFormaPagamento < 0 || indiceFormaPagamento >= formasPagamento.length) {
+            console.log("Erro: Forma de pagamento inválida!");
+            return;
+        }
+        let selecionarFormaPagamento = formasPagamento[indiceFormaPagamento]
+        const servicos = [
+            { nome: "Aula de Musculação", valor: 50 },
+            { nome: "Consulta Nutricional", valor: 105 },
+            { nome: "Avaliação Física", valor: 40 },
+            { nome: "Assinatura de plano", valor: pegarValorPlano }
+        ]
+        let tabelaServico = await this.servico.listarTipoServico(id_servico)
+        const servico = servicos.find(s => s.nome === tabelaServico.tipo_servico);
+        
+        if (!servico) {
+            console.log("Serviço inexistente!")
+            return
+        }
+        if (id_servico)
+            if (!formasPagamento.includes(selecionarFormaPagamento)) {
+                console.log("Forma de pagamento não inclusa!")
+                return
+            }
+        
+        const valor = servico.valor
+        await this.repo.inserirPagamento(id_servico, valor, selecionarFormaPagamento)
+        console.log(`Pagamento de valor R$${valor} efetuado com sucesso via ${selecionarFormaPagamento}`)
+    }
+    public async atualizarPagamentoPorID(id: number, coluna: string, novoValor: string) {
+        const colunasPermitidas = ['forma_pagamento', 'valor_total'];
+
+        if (!colunasPermitidas.includes(coluna)) {
+            console.log("Coluna inválida! Atualização cancelada.");
+            return;
+        }
+
         await this.repo.atualizarPagamentoPorID(id, coluna, novoValor);
     }
     async atualizarInformacoes(coluna, registro, id) {
@@ -109,7 +153,7 @@ export class PagamentosService {
         }
 
 
-        const  pagamentos = pagamento.find(async a => await a.pegarId() === id);
+        const pagamentos = pagamento.find(async a => await a.pegarId() === id);
 
         if (!pagamentos) {
             console.log("ID inválido! Operação cancelada.");
@@ -121,7 +165,7 @@ export class PagamentosService {
         }
     }
 
-    public async visualizarInadimplentes():Promise<InadimplentesDTO[]>{
+    public async visualizarInadimplentes(): Promise<InadimplentesDTO[]> {
         return await this.repo.visualizarInadimplentes()
 
     }

@@ -1,11 +1,14 @@
 import PromptSync, { Prompt } from "prompt-sync";
 import { PagamentosService } from "../service/PagamentosService";
+import { ServicosService } from "../service/ServicosService";
 
 export class PagamentosView {
+    private servicos: ServicosService;
     private pagamentos: PagamentosService;
     private prompt: Prompt;
 
     constructor() {
+        this.servicos = new ServicosService()
         this.pagamentos = new PagamentosService();
         this.prompt = PromptSync();
     }
@@ -36,10 +39,15 @@ export class PagamentosView {
                 console.table(await this.pagamentos.buscarPorCpf(cpf));
                 return this.exibirMenu();
             case 3:
+                console.table (await this.servicos.listarServicos())
                 let id_servico = parseInt(this.prompt("Qual o id do serviço?"));
-                let valor_total = parseInt(this.prompt("Qual o valor total do pagamento?"));
-                let forma_pagamento = this.prompt("Qual a forma de pagamento?");
-                console.table(await this.pagamentos.inserirPagamento(id_servico, valor_total, forma_pagamento));
+                if (!await this.servicos.verificarId(id_servico) || isNaN(id_servico)){
+                    console.log("Serviço inexistente!")
+                    return this.exibirMenu()
+                }
+                console.log("Formas de pagamento: 1-Pix | 2-Debito | 3-Credito | 4-Dinheiro ")
+                let forma_pagamento = this.prompt("Selecione o numero correspondente a forma de pagamento desejada! ");
+                await this.pagamentos.inserirPagamento(id_servico, forma_pagamento);
                 return this.exibirMenu();
                 case 4:
                     let cpfUpdate = this.prompt("Insira o CPF do cliente que realizou o serviço: ");
@@ -80,7 +88,7 @@ export class PagamentosView {
 
                 let novoValor = this.prompt(`Digite o novo valor para ${colunaUpdate}: `);
 
-                await this.pagamentos.atualizarAgendamentoPorID(idUpdate, colunaUpdate, novoValor);
+                await this.pagamentos.atualizarPagamentoPorID(idUpdate, colunaUpdate, novoValor);
                 console.log(`Pagamento ID ${idUpdate} atualizado com sucesso!`);
 
                 return this.exibirMenu();
@@ -123,7 +131,7 @@ export class PagamentosView {
                     return 
                 default:
                     console.log("Numero inserido não existente no menu!")
-                    break
+                    return this.exibirMenu()
         }
     }
 }

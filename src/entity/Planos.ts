@@ -1,7 +1,7 @@
 export class Planos{
     private id :number 
     private nome : string 
-    private valor: number
+    public valor: number
 
     constructor(id: number, nome: string, valor: number) {
         this.id = id;
@@ -11,7 +11,7 @@ export class Planos{
     public  pegarID(){
         return this.id
     }
-    public  pegarValor(){
+    public  getValor(): number{
         return this.valor
     }
 }

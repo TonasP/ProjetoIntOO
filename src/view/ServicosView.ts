@@ -1,11 +1,18 @@
 import PromptSync, { Prompt } from "prompt-sync";
 import { ServicosService } from "../service/ServicosService";
+import { ClienteService } from "../service/ClienteService";
+import { FuncionarioService } from "../service/FuncionarioService";
+
 
 export class ServicosView {
+    private funcionario: FuncionarioService
+    private cliente : ClienteService
     private servicos: ServicosService;
     private prompt: Prompt;
 
     constructor() {
+        this.funcionario = new FuncionarioService()
+        this.cliente = new ClienteService()
         this.servicos = new ServicosService();
         this.prompt = PromptSync();
     }
@@ -34,14 +41,16 @@ export class ServicosView {
                 console.table(await this.servicos.buscarID(id));
                 return this.exibirMenu();
             case 3:
-                let id_funcionario = parseInt(this.prompt("Qual o id do funcionário?"));
+                console.table (await this.funcionario.listarFuncionario())
+                let id_funcionario = parseInt( this.prompt("Qual o id do funcionário?"));
+                console.table(await this.cliente.listarClientes())
                 let id_cliente = parseInt(this.prompt("Qual o id do cliente?"));
                 console.log(`
-                    "Aula de musculação" 
-                    "Consulta Nutricional" 
-                    "Avaliação física" 
+                    1-Aula de musculacao
+                    2-Consulta nutricional
+                    3-Avaliacao fisica
                 `);
-                let tipo_servico = this.prompt("Qual foi o tipo de serviço realizado ?");
+                let tipo_servico = this.prompt("Insira o serviço realizado baseado na tabela acima! ");
                 let data_servico = new Date(this.prompt("Qual a data em que foi realizado o serviço?"));
                 await this.servicos.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico);
                 return this.exibirMenu();
@@ -83,7 +92,7 @@ export class ServicosView {
 
                 let novoValor = this.prompt(`Digite o novo valor para ${colunaUpdate}: `);
 
-                await this.servicos.atualizarServicoPorID(idUpdate, colunaUpdate, novoValor);
+                await this.servicos.atualizarInformacoes(idUpdate, colunaUpdate, novoValor);
                 console.log(`Serviço ID ${idUpdate} atualizado com sucesso!`);
 
                 return this.exibirMenu();

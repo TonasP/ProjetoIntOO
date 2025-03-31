@@ -34,8 +34,34 @@ export class AgendamentosService {
         return lista.length > 0;
         //Caso o CPF já exista no banco de dados, o metodo retorna True, caso contrario, retorna False
     }
-    public async inserirAgendamento(id_cliente: Number, id_funcionario: Number, data_marcada: Date, tipo: string) {
-        await this.repo.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo)
+    public async inserirAgendamento(id_cliente: number, id_funcionario: number, data_marcada: Date, tipo: string) {
+        let converterServico = parseInt(tipo);
+
+
+        if (isNaN(converterServico) || converterServico < 1 || converterServico > 3) {
+            console.log("Erro: Serviço inválido.");
+            return;
+        }
+
+        let indiceServico = converterServico - 1;
+        const servicosFixos = ["Aula de Musculação", "Consulta Nutricional", "Avaliação Física", ];
+        let selecionarServico = servicosFixos[indiceServico];
+
+
+        if (!selecionarServico) {
+            console.log("Erro: Serviço selecionado não existe.");
+            return;
+        }
+
+        if (!id_cliente || isNaN(id_cliente)) {
+            console.log("Erro: ID do cliente inválido.");
+            return;
+        }
+        if (data_marcada < new Date()){
+            console.log("Agendamentos só podem serem marcados para o futuro! ")
+            return
+        }
+        await this.repo.inserirAgendamento(id_cliente, id_funcionario, data_marcada, selecionarServico)
         console.log("Agendamento inserido com sucesso! ")
     }
     public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {

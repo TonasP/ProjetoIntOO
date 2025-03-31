@@ -11,6 +11,16 @@ export class FuncionarioService {
     async listarFuncionario(): Promise<Funcionario[]> {
         return await this.repo.listarFuncionarios()
     }
+    public async pegarSituacaoEmpregado(id: number): Promise<boolean> {
+        const situacao = await this.repo.pegarSituacaoEmpregado(id);
+        if (!situacao || situacao.length === 0) {
+            console.log("Erro: Funcionário não encontrado.");
+            return false;
+        }
+    
+        
+        return await situacao[0].pegarSituacao() !== 'Inativo';
+    }
     async verificarCpf(cpf): Promise<boolean> {
         let lista: Funcionario[] = []
         lista = await this.repo.verificarCpf(cpf)
@@ -29,22 +39,76 @@ export class FuncionarioService {
             return lista;
         }
     }
+    async buscarPorId(id: number): Promise<Funcionario[]| void> {
+        let lista: Funcionario[] = []
+        lista = await this.repo.buscarPorId(id)
+
+        if (lista.length == 0) {
+            console.log("Funcionário não encontrado!");
+            return
+        }
+        else {
+            return lista;
+        }
+    }
     async inserirFuncionario(nome: string, cpf: string, data_nascimento: Date, funcao: string, numero_celular: string, email: string) {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const emailValido = regex.test(email)
+        const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const regexNumero = /(\(?\d{2}\)?\s)?(\d{4,5}\-\d{4})/
+        const regexCpf = /^\d{3}\.\d{3}\.\d{3}\-\d{2}$/
+        const emailValido = regexEmail.test(email)
+        const cpfValido = regexCpf.test(cpf)
+        const numeroValido = regexNumero.test(numero_celular)
+        let hoje = new Date
+        let calcularIdadeAno = hoje.getFullYear() - data_nascimento.getFullYear()
+        let converterFuncaoOpcao= parseInt(funcao)
+        let indiceFuncoes= converterFuncaoOpcao - 1
+        if (indiceFuncoes <1 || indiceFuncoes >4 ){
+            console.log("Função invalida!")
+            return
+        }
+        let funcoes = ['Gerente', 'Recepcionista', 'Nutricionista', 'Instrutor']
+        let funcaoEscolhida = funcoes[indiceFuncoes]
         if (!emailValido) {
-            throw new Error("Email Invalido zé!!!!!!!!!!")
+            console.log("Email Invalido!")
+            return
+        }
+        if (calcularIdadeAno <16){
+            console.log("Não contratamos menores de 16 anos!")
+            return
+        }
+        if (!cpfValido) {
+            console.log("CPF não é valido!")
+            return
+        }
+        if (!numeroValido) {
+            console.log("Numero de celular inválido!")
+            return
         }
         if (await this.verificarCpf(cpf)) {
             console.log("O CPF inserido já existe no banco de dados!")
             return
         }
-        if (!funcao) {
-            console.log("Função Inexistente")
+       
+        await this.repo.inserirFuncionario(nome, cpf, data_nascimento, funcaoEscolhida, numero_celular, email)
+        console.log("Funcionário inserido com sucesso!")
+    }
+    public async atualizarSituacaoEmpregado(situacao, id){
+        let situacaoPossibilidade = ['Ativo', 'Inativo']
+        let converter = parseInt(situacao)
+        let converterIndice = converter-1
+        let selecionarPossibilidade = situacaoPossibilidade[converterIndice]
+        if (converterIndice <0 || converterIndice > 1) {
+            console.log("Situação selecionada não existe!")
             return
         }
-        await this.repo.inserirFuncionario(nome, cpf, data_nascimento, funcao, numero_celular, email)
-        console.log("Funcionário inserido com sucesso!")
+        if (!this.buscarPorId(id)){
+            console.log("Id selecionado não existente!")
+            return
+
+        }
+        await this.repo.alterarSituacaoEmpregado(selecionarPossibilidade, id)
+        console.log("Situação empregatícia alterada com sucesso!")
+        
     }
     async atualizarInformacoes(coluna, registro, cpf) {
         const colunasPermitidas = ['nome', 'email', 'numero_celular', 'funcao', 'cpf']

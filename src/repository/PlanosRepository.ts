@@ -33,6 +33,11 @@ export class PlanosRepository {
         }
         return listaPlanos;
     }
+    public async pegarValor(id):Promise<Planos[]>{
+        const query = `SELECT valor FROM "GymControl".planos where id = $1`
+        const result = await this.pool.query(query,[id])
+        return result.rows
+    }
     public async atualizarInformacoes(coluna, registro, id) {
         const query = `update "GymControl".planos set ${coluna} =$1  where id = $2`
         const result = await this.pool.query(query, [registro, id])

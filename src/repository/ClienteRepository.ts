@@ -9,6 +9,12 @@ export class ClienteRepository {
     constructor() {
         this.pool = Database.iniciarConexao();
     }
+    public async pegarIdPorCpf(cpf){
+        const query = `SELECT id FROM "GymControl".clientes where cpf = $1`
+        const result = await this.pool.query(query,[cpf])
+
+        return result.rows[0]
+    }
 
     async listarClientes(): Promise<Cliente[]> {
 
@@ -53,6 +59,7 @@ export class ClienteRepository {
                 VALUES ($1, $2, $3, $4, $5, $6);`
         await this.pool.query(query, [nome, cpf, data_nascimento, plano_id, numero_celular, email])
     }
+
     public async atualizarInformacoes(coluna, registro, cpf) {
         const query = `update "GymControl".clientes set ${coluna} =$1  where cpf = $2`
         const result = await this.pool.query(query, [registro, cpf])

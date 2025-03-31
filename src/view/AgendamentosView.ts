@@ -1,11 +1,17 @@
 import PromptSync, { Prompt } from "prompt-sync";
 import { AgendamentosService } from "../service/AgendamentosService";
+import { FuncionarioService } from "../service/FuncionarioService";
+import { ClienteService } from "../service/ClienteService";
 
 export class AgendamentosView {
+    private cliente : ClienteService
+    private funcionario : FuncionarioService
     private agendamentos: AgendamentosService
     private prompt: Prompt
 
     constructor() {
+        this.cliente = new ClienteService()
+        this.funcionario = new FuncionarioService()
         this.agendamentos = new AgendamentosService()
         this.prompt = PromptSync()
     }
@@ -33,10 +39,17 @@ export class AgendamentosView {
                 console.table(await this.agendamentos.buscarPorCpf(cpf))
                 return this.exibirMenu()
             case 3:
+                console.table(await this.funcionario.listarFuncionario())
                 let id_funcionario = parseInt(this.prompt("Qual o id do funcionário?"))
+                console.table(await this.cliente.listarClientes())
                 let id_cliente = parseInt(this.prompt("Qual o id do cliente?"))
-                let tipo = this.prompt("Para serviço é o agendamento ?")
-                let data_marcada = new Date(this.prompt("Para que dia foi agendado? ?"))
+                console.log(`
+                    1-Aula de musculacao
+                    2-Consulta nutricional
+                    3-Avaliacao fisica
+                `);
+                let tipo = this.prompt("Insira o serviço realizado baseado na tabela acima!")
+                let data_marcada = new Date(this.prompt("Para que dia deseja agendar ?"))
                 await this.agendamentos.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo)
                 return this.exibirMenu()
             case 4:

@@ -16,17 +16,22 @@ export class PlanosService {
         return lista.length > 0;
         //Caso o ID exista no banco de dados, o metodo retorna True, caso contrario, retorna False
     }
-    async buscarID(id) {
-        let lista: Planos[] = []
-        lista = await this.repo.buscarID(id)
-
-        if (lista.length == 0) {
-            throw new Error("Plano não encontrado!");
+    async pegarValor(id): Promise<number | void> {
+        if (!id) {
+            console.log("ID de plano inválido!");
+            return;
         }
-        else {
-            return lista;
+    
+        const resultado = await this.repo.pegarValor(id);
+    
+        if (!resultado || resultado.length === 0) {
+            console.log("Erro: Nenhum valor encontrado para o plano.");
+            return;
         }
+    
+        return resultado[0].valor; 
     }
+    
     async atualizarInformacoes(coluna, registro, id) {
         const colunasPermitidas = ['nome', 'valor']
         if (!colunasPermitidas.includes(coluna)) {
