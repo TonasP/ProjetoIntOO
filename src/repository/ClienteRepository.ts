@@ -1,6 +1,7 @@
 import { Pool } from "pg";
 import { Database } from "./DataBase";
 import { Cliente } from "../entity/Cliente";
+import { ClienteDTO } from "../entity/ClienteDTO";
 
 export class ClienteRepository {
 
@@ -9,25 +10,31 @@ export class ClienteRepository {
     constructor() {
         this.pool = Database.iniciarConexao();
     }
-    public async pegarIdPorCpf(cpf){
+    public async pegarIdPorCpf(cpf) {
         const query = `SELECT id FROM "GymControl".clientes where cpf = $1`
-        const result = await this.pool.query(query,[cpf])
+        const result = await this.pool.query(query, [cpf])
 
         return result.rows[0]
     }
 
-    async listarClientes(): Promise<Cliente[]> {
+    async listarClientes(): Promise<ClienteDTO[]> {
 
-        const query = 'SELECT * FROM "GymControl".clientes ORDER BY id ASC '
+        const query = `select clientes.id, clientes.nome, clientes.cpf, clientes.data_nascimento, planos.nome as plano, clientes.numero_celular, clientes.email from "GymControl".clientes
+                        join "GymControl".planos on clientes.plano_id = planos.id`
         const result = await this.pool.query(query);
 
-        const listaClientes: Cliente[] = [];
+        return result.rows.map(row => ({
+           id: row.id,
+           nome: row.nome,
+           cpf : row.cpf,
+           data_nascimento : row.data_nascimento,
+           plano : row.plano,
+           numero_celular: row.numero_celular,
+           email : row.email
 
-        for (const row of result.rows) {
-            const cliente = new Cliente(row.id, row.nome, row.email, row.cpf, row.data_nascimento, row.plano_id, row.numero_celular)
-            listaClientes.push(cliente);
-        }
-        return listaClientes;
+
+        }));
+    
     }
     public async buscarPorCpf(cpf: number): Promise<Cliente[]> {
         const query = 'SELECT * FROM "GymControl".clientes where cpf = $1 ';
@@ -67,7 +74,7 @@ export class ClienteRepository {
     }
     public async deletarCliente(cpf) {
         const query = `delete  from "GymControl".clientes where cpf = $1`
-         await this.pool.query(query, [cpf])
+        await this.pool.query(query, [cpf])
 
     }
 

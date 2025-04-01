@@ -16,6 +16,13 @@ export class PlanosService {
         return lista.length > 0;
         //Caso o ID exista no banco de dados, o metodo retorna True, caso contrario, retorna False
     }
+    async buscarId(id): Promise<Planos[] | void>{
+        if (!this.verificarId(id)){
+            console.log("ID de plano inválido!")
+            return;
+        }
+        return this.repo.buscarID(id)
+    }
     async pegarValor(id): Promise<number | void> {
         if (!id) {
             console.log("ID de plano inválido!");

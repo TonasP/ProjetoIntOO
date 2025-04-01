@@ -1,17 +1,19 @@
 import { ClienteService } from "../service/ClienteService";
 import PromptSync, { Prompt } from "prompt-sync";
 import { PlanosService } from "../service/PlanosService";
+import { ServicosService } from "../service/ServicosService";
 
 
 export class ClienteView {
-    private plano : PlanosService
-    private cliente: ClienteService
-    private prompt: Prompt
+    private plano: PlanosService;
+    private cliente: ClienteService;
+    private prompt: Prompt;
 
     constructor() {
-        this.plano = new PlanosService()
-        this.cliente = new ClienteService()
-        this.prompt = PromptSync()
+        const servico = new ServicosService();  
+        this.plano = new PlanosService();
+        this.cliente = new ClienteService(servico);  
+        this.prompt = PromptSync();
     }
     public async listarPlanos(){
         return await this.plano.listarPlanos()
@@ -43,7 +45,7 @@ export class ClienteView {
             case 3:
                 let nome = this.prompt("Digite o nome do cliente: ")
                 let cpf = this.prompt("Digite o cpf do cliente seguindo o seguinte modelo: 000.000.000-00: ")
-                let data_nascimento = new Date(this.prompt("Digite a data de nascimento do cliente seguindo o modelo: DD/MM/AAAA : "))
+                let data_nascimento = this.prompt("Digite a data de nascimento do cliente seguindo o modelo: DD/MM/AAAA : ")
                 console.table(await this.listarPlanos())
                 let plano_id = parseInt(this.prompt("Digite o plano do cliente: "))
                 let numero_celular = this.prompt("Digite o numero de celular do cliente seguindo o modelo: (00) 00000-0000: ")

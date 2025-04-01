@@ -1,13 +1,14 @@
 import { promises } from "dns";
 import { FuncionarioService } from "../service/FuncionarioService";
 import PromptSync, { Prompt } from "prompt-sync";
+import { ServicosService } from "../service/ServicosService";
 export class FuncionarioView {
-    private Funcionario: FuncionarioService
-    private prompt: Prompt
+    private Funcionario: FuncionarioService;
+    private prompt: Prompt;
 
     constructor() {
-        this.Funcionario = new FuncionarioService()
-        this.prompt = PromptSync()
+        this.Funcionario = new FuncionarioService(new ServicosService);  
+        this.prompt = PromptSync(); 
     }
 
     public async exibirMenu(): Promise<void> {
@@ -18,7 +19,7 @@ export class FuncionarioView {
             \x1b[33m2-\x1b[0m Buscar um funcionário via CPF
             \x1b[33m3-\x1b[0m Cadastrar um novo funcionário
             \x1b[33m4-\x1b[0m Atualizar um funcionário
-            \x1b[33m5-\x1b[0m Atualizar situação empregatícia
+            \x1b[33m5-\x1b[0m Demitir Funcionário
             \x1b[33m6-\x1b[0m Retornar ao menu principal
             
             \x1b[1m\x1b[34m----------------------------------\x1b[0m

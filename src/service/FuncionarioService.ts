@@ -1,26 +1,30 @@
 import { Funcionario } from "../entity/Funcionario";
 import { FuncionarioRepository } from "../repository/FuncionarioRepository";
+import { ServicosService } from "./ServicosService";
 
 export class FuncionarioService {
-    private repo: FuncionarioRepository
+    private servico: ServicosService;
+    private repo: FuncionarioRepository;
 
-    constructor() {
-        this.repo = new FuncionarioRepository()
+    constructor(servico: ServicosService) {
+        this.servico = servico;  
+        this.repo = new FuncionarioRepository();
     }
 
     async listarFuncionario(): Promise<Funcionario[]> {
         return await this.repo.listarFuncionarios()
     }
     public async pegarSituacaoEmpregado(id: number): Promise<boolean> {
-        const situacao = await this.repo.pegarSituacaoEmpregado(id);
-        if (!situacao || situacao.length === 0) {
+        const funcionario = await this.repo.pegarSituacaoEmpregado(id);
+    
+        if (!funcionario) {
             console.log("Erro: Funcionário não encontrado.");
             return false;
         }
     
-        
-        return await situacao[0].pegarSituacao() !== 'Inativo';
+        return await funcionario.pegarSituacao() !== 'Inativo';
     }
+    
     async verificarCpf(cpf): Promise<boolean> {
         let lista: Funcionario[] = []
         lista = await this.repo.verificarCpf(cpf)
@@ -93,6 +97,7 @@ export class FuncionarioService {
         console.log("Funcionário inserido com sucesso!")
     }
     public async atualizarSituacaoEmpregado(situacao, id){
+        let servicosRealizados = await this.servico.listarServicosFuncionario(id)
         let situacaoPossibilidade = ['Ativo', 'Inativo']
         let converter = parseInt(situacao)
         let converterIndice = converter-1
@@ -103,8 +108,12 @@ export class FuncionarioService {
         }
         if (!this.buscarPorId(id)){
             console.log("Id selecionado não existente!")
+            return    
+        }
+        if (selecionarPossibilidade == 'Inativo' && servicosRealizados.length <= 0){
+            console.log("O Funcionário não havia realizado nenhum serviço até o momento, então seu registro será deletado!")
+            await this.deletarFuncionario(id)
             return
-
         }
         await this.repo.alterarSituacaoEmpregado(selecionarPossibilidade, id)
         console.log("Situação empregatícia alterada com sucesso!")
@@ -128,11 +137,11 @@ export class FuncionarioService {
         await this.repo.atualizarInformacoes(coluna, registro, cpf)
         console.log("Atualização realiza com sucesso!")
     }
-    public async deletarFuncionario(cpf) {
-        if (!await this.verificarCpf(cpf)) {
+    public async deletarFuncionario(id) {
+        if (!await this.buscarPorId(id)) {
             console.log("O CPF inserido não foi encontrado!")
         }
-        await this.repo.deletarFuncionario(cpf)
+        await this.repo.deletarFuncionario(id)
         console.log("Funcionário deletado com sucesso!")
     }
 

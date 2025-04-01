@@ -51,7 +51,7 @@ export class ServicosView {
                     3-Avaliacao fisica
                 `);
                 let tipo_servico = this.prompt("Insira o serviço realizado baseado na tabela acima! ");
-                let data_servico = new Date(this.prompt("Qual a data em que foi realizado o serviço?"));
+                let data_servico = new Date(this.prompt("Qual a data em que foi realizado o serviço? Utilize "));
                 await this.servicos.inserirServico(id_funcionario, id_cliente, tipo_servico, data_servico);
                 return this.exibirMenu();
             case 4:

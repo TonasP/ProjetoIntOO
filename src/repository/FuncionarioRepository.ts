@@ -19,6 +19,7 @@ export class FuncionarioRepository {
         return listaFuncionarios
 
     }
+
     async buscarPorCpf(cpf: string): Promise<Funcionario[]> {
         const query = 'SELECT * FROM "GymControl".funcionarios where cpf = $1'
         const result = await this.pool.query(query, [cpf])
@@ -43,11 +44,14 @@ export class FuncionarioRepository {
         }
         return listaFuncionarios
     }
-    public async pegarSituacaoEmpregado(id):Promise <Funcionario[]>{
-        const query = `Select situacao_empregado from "GymControl".funcionarios where id = $1 `
-        const result = await this.pool.query(query,[id])
-        return result.rows
+    public async pegarSituacaoEmpregado(id: number): Promise<Funcionario | null> {
+        const query = `SELECT * FROM "GymControl".funcionarios WHERE id = $1`;
+        const result = await this.pool.query(query, [id]);
+    
+        const row = result.rows[0];
+        return new Funcionario(row.id, row.nome, row.cpf, row.data_nascimento, row.funcao, row.numero_celular, row.email, row.situacao_empregado);
     }
+    
     public async verificarCpf(cpf): Promise<Funcionario[]> {
         const query = 'SELECT * FROM "GymControl".funcionarios where cpf = $1 ';
         const result = await this.pool.query(query, [cpf]);
@@ -76,8 +80,8 @@ export class FuncionarioRepository {
 	    VALUES ($1, $2, $3, $4, $5, $6, 'Ativo')`
         await this.pool.query(query, [nome, cpf, data_nascimento, funcao, numero_celular, email])
     }
-    public async deletarFuncionario(cpf) {
-        const query = `delete  from "GymControl".funcionarios where cpf = $1`
-        const result = await this.pool.query(query, [cpf])
+    public async deletarFuncionario(id) {
+        const query = `delete  from "GymControl".funcionarios where id= $1`
+        const result = await this.pool.query(query, [id])
     }
 }

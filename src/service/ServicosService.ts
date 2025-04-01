@@ -4,18 +4,27 @@ import { ServicosDTO } from "../entity/ServicosDTO";
 import { FuncionarioService } from "./FuncionarioService";
 
 export class ServicosService {
-    private funcionario : FuncionarioService
     private repo: ServicosRepository;
+    private _funcionarioService: FuncionarioService;
 
     constructor() {
-        this.funcionario = new FuncionarioService()
         this.repo = new ServicosRepository();
+        this._funcionarioService = new FuncionarioService(this);  
+    }
+
+    private get funcionarioService(): FuncionarioService {
+        if (!this._funcionarioService) {
+            this._funcionarioService = new FuncionarioService(this);
+        }
+        return this._funcionarioService;
     }
 
     async listarServicos(): Promise<ServicosDTO[]> {
         return await this.repo.listarServicos();
     }
-
+    async listarServicosFuncionario(id){
+        return await this.repo.listarServicosFuncionarios(id)
+    }
     async verificarId(id): Promise<boolean | void> {
         if (!id) {
             return
@@ -41,7 +50,7 @@ export class ServicosService {
         }
     }
     async listarTipoServico(id) {
-        return this.repo.listarTipoServico(id)
+        return await this.repo.listarTipoServico(id)
 
     }
 
@@ -50,7 +59,7 @@ export class ServicosService {
     }
 
     public async listarServicoEspecifico(cpf): Promise<ServicosDTO[]> {
-        return this.repo.listarServicosEspecificos(cpf);
+        return await this.repo.listarServicosEspecificos(cpf);
     }
 
     async inserirServico(id_funcionario: number, id_cliente: number, tipo_servico: string, data_servico: Date) {
@@ -65,9 +74,8 @@ export class ServicosService {
         let indiceServico = converterServico - 1;
         const servicosFixos = ["Aula de Musculação", "Consulta Nutricional", "Avaliação Física", "Assinatura de plano"];
         let selecionarServico = servicosFixos[indiceServico];
-        let situacaoFuncionario = await this.funcionario.pegarSituacaoEmpregado(id_funcionario)
         
-        if (situacaoFuncionario === false){
+        if (await this._funcionarioService!.pegarSituacaoEmpregado(id_funcionario) ===false){
             console.log("Você não pode ter realizado um serviço com um funcionário inativo no momento!")
             return
         }

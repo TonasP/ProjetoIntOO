@@ -29,7 +29,7 @@ export class PlanosView {
                 return this.exibirMenu()
             case 2:
                 let id = parseInt(this.prompt("Qual o ID do plano?"))
-                console.table(await this.planos.buscarID(id))
+                console.table(await this.planos.buscarId(id))
                 return this.exibirMenu()
 
             case 3:

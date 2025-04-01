@@ -15,7 +15,7 @@ export class AgendamentosService {
 
     async buscarPorCpf(cpf: string): Promise<AgendamentosDTO[]> {
         let lista = await this.repo.buscarPorCpf(cpf)
-        
+
 
         if (lista.length == 0) {
             console.log("Agendamento não encontrado!")
@@ -25,7 +25,7 @@ export class AgendamentosService {
             return lista
         }
     }
-    async listarAgendamentosEspecificos(cpf){
+    async listarAgendamentosEspecificos(cpf) {
         return this.repo.listarAgendamentosEspecificos(cpf)
     }
     async verificarCpf(cpf): Promise<boolean> {
@@ -34,7 +34,7 @@ export class AgendamentosService {
         return lista.length > 0;
         //Caso o CPF já exista no banco de dados, o metodo retorna True, caso contrario, retorna False
     }
-    public async inserirAgendamento(id_cliente: number, id_funcionario: number, data_marcada: Date, tipo: string) {
+    public async inserirAgendamento(id_cliente: number, id_funcionario: number, data_marcada: string , tipo: string) {
         let converterServico = parseInt(tipo);
 
 
@@ -44,7 +44,7 @@ export class AgendamentosService {
         }
 
         let indiceServico = converterServico - 1;
-        const servicosFixos = ["Aula de Musculação", "Consulta Nutricional", "Avaliação Física", ];
+        const servicosFixos = ["Aula de Musculação", "Consulta Nutricional", "Avaliação Física",];
         let selecionarServico = servicosFixos[indiceServico];
 
 
@@ -57,21 +57,35 @@ export class AgendamentosService {
             console.log("Erro: ID do cliente inválido.");
             return;
         }
-        if (data_marcada < new Date()){
+        const partes = data_marcada.split("/");
+        if (partes.length !== 3) {
+            console.log("Erro: Formato de data inválido!");
+            return;
+        }
+        const dataFormatada = `${partes[2]}-${partes[1]}-${partes[0]}`
+
+        const dataMarcada = new Date(dataFormatada);
+        if (isNaN(dataMarcada.getTime())) {
+            console.log("Erro: Data inválida!");
+            return;
+        }
+
+        if (dataMarcada < new Date()) {
             console.log("Agendamentos só podem serem marcados para o futuro! ")
             return
         }
-        await this.repo.inserirAgendamento(id_cliente, id_funcionario, data_marcada, selecionarServico)
+
+        await this.repo.inserirAgendamento(id_cliente, id_funcionario, dataMarcada, selecionarServico)
         console.log("Agendamento inserido com sucesso! ")
     }
     public async atualizarAgendamentoPorID(id: number, coluna: string, novoValor: string) {
         const colunasPermitidas = ['id_funcionario', 'data_marcada', 'tipo'];
-        
+
         if (!colunasPermitidas.includes(coluna)) {
             console.log("Coluna inválida! Atualização cancelada.");
             return;
         }
-    
+
         await this.repo.atualizarAgendamentoPorID(id, coluna, novoValor);
     }
     public async atualizarInformacoes(coluna, registro, cpf) {
