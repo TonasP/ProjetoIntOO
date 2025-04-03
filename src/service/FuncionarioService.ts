@@ -32,12 +32,13 @@ export class FuncionarioService {
         //Caso o CPF já exista no banco de dados, o metodo retorna True, caso contrario, retorna False
     }
 
-    async buscarPorCpf(cpf: string): Promise<Funcionario[]> {
+    async buscarPorCpf(cpf: string): Promise<Funcionario[] | void > {
         let lista: Funcionario[] = []
         lista = await this.repo.buscarPorCpf(cpf)
 
         if (lista.length == 0) {
-            throw new Error("Funcionário não encontrado!");
+            console.log("Funcionário não encontrado!");
+            return
         }
         else {
             return lista;

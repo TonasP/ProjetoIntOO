@@ -7,7 +7,7 @@ export class FuncionarioRepository {
         this.pool = Database.iniciarConexao();
     }
     async listarFuncionarios(): Promise<Funcionario[]> {
-        const query = 'SELECT * FROM "GymControl".funcionarios '
+        const query = 'SELECT * FROM "GymControl".funcionarios ORDER BY id ASC '
         const result = await this.pool.query(query)
 
         const listaFuncionarios: Funcionario[] = []

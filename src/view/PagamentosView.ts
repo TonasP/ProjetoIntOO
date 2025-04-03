@@ -22,7 +22,7 @@ export class PagamentosView {
             \x1b[33m3-\x1b[0m Inserir um pagamento
             \x1b[33m4-\x1b[0m Atualizar um pagamento
             \x1b[33m5-\x1b[0m Deletar um pagamento
-            \x1b[33m6-\x1b[0m Visualizar Inadimplentes
+            \x1b[33m6-\x1b[0m Visualizar serviços sem pagamentos
             \x1b[33m7-\x1b[0m Retornar ao menu principal
             
             \x1b[1m\x1b[34m----------------------------------\x1b[0m
