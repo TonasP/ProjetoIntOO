@@ -57,6 +57,7 @@ export class AgendamentosService {
             console.log("Erro: ID do cliente inválido.");
             return;
         }
+        const transformarData = data_marcada.toString
         const partes = data_marcada.split("/");
         if (partes.length !== 3) {
             console.log("Erro: Formato de data inválido!");

@@ -64,8 +64,21 @@ export class ClienteView {
                 return this.exibirMenu()
             case 5:
                 let identificar = this.prompt("Insira o CPF do cliente que deseja deletar! ")
-                await this.cliente.deletarCliente(identificar)
-                return this.exibirMenu()
+                console.log("Deletar um cliente resultará em deletar todos os registros que o cliente está incluso, incluindo serviços, agendamentos e pagamentos!")
+                let escolha = parseInt(this.prompt ("Deseja deletar o cliente sabendo das consequências ? 1- Sim | 2- Não"))
+                    if (escolha = 1){
+                        await this.cliente.deletarCliente(identificar)
+                        return this.exibirMenu()
+                    }
+                    if (escolha = 2){
+                        console.log("Cancelando exclusão de registros e retornando ao menu !")
+                        return this.exibirMenu()
+                    }
+                    else {
+                        console.log("Opção inválida!")
+                        return this.exibirMenu()
+                    }
+                
             case 6:
                 console.log("Retornando ao menu principal")
                 return 

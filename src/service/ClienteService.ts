@@ -122,6 +122,7 @@ export class ClienteService {
     await this.repo.atualizarInformacoes(coluna, registro, cpf)
     console.log("Atualização realizada com sucesso!")
   }
+  public async 
   public async deletarCliente(cpf) {
     if (!await this.verificarCpf(cpf)) {
       console.log("O CPF inserido não foi encontrado!")

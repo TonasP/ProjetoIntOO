@@ -10,9 +10,9 @@ export class ServicosView {
     private servicos: ServicosService;
     private prompt: Prompt;
 
-    constructor() {
-        this.funcionario = new FuncionarioService()
-        this.cliente = new ClienteService()
+    constructor(funcionario : FuncionarioService, cliente: ClienteService) {
+        this.funcionario = funcionario
+        this.cliente = cliente
         this.servicos = new ServicosService();
         this.prompt = PromptSync();
     }

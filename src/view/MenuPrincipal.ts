@@ -15,15 +15,22 @@ export class MenuPrincipal {
     private servicos: ServicosView
     private prompt: Prompt
 
-    constructor() {
-        this.agendamentos = new AgendamentosView();
-        this.clientes = new ClienteView();
-        this.funcionarios = new FuncionarioView();
-        this.pagamentos = new PagamentosView();
-        this.planos = new PlanosView();
-        this.servicos = new ServicosView();
-        this.prompt = PromptSync()
-    }
+    constructor(
+    agendamentos: AgendamentosView, 
+    servicos: ServicosView, 
+    clientes: ClienteView, 
+    funcionarios: FuncionarioView, 
+    pagamentos: PagamentosView, 
+    planos: PlanosView
+) {
+    this.agendamentos = agendamentos;
+    this.servicos = servicos;
+    this.clientes = clientes;
+    this.funcionarios = funcionarios;
+    this.pagamentos = pagamentos;
+    this.planos = planos;
+    this.prompt = PromptSync();
+}
     public async exibirMenu() {
         
         console.log(`

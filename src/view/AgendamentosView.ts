@@ -9,9 +9,9 @@ export class AgendamentosView {
     private agendamentos: AgendamentosService
     private prompt: Prompt
 
-    constructor() {
-        this.cliente = new ClienteService()
-        this.funcionario = new FuncionarioService()
+    constructor(cliente : ClienteService, funcionario: FuncionarioService) {
+        this.cliente = cliente
+        this.funcionario = funcionario
         this.agendamentos = new AgendamentosService()
         this.prompt = PromptSync()
     }
@@ -49,7 +49,7 @@ export class AgendamentosView {
                     3-Avaliacao fisica
                 `);
                 let tipo = this.prompt("Insira o serviço realizado baseado na tabela acima!")
-                let data_marcada = new Date(this.prompt("Para que dia deseja agendar ?"))
+                let data_marcada = this.prompt("Para que dia deseja agendar ?")
                 await this.agendamentos.inserirAgendamento(id_cliente, id_funcionario, data_marcada, tipo)
                 return this.exibirMenu()
             case 4:
